@@ -1,5 +1,5 @@
 // GANTI DENGAN URL APPS SCRIPT ANDA
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8fI8iA36V2ggyM0R4Cl8jfT401BtCf8dugXd_bMFsWduAksw5lWp9CVBgq9W_ZN8/exec"; 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb0Qf0e4csapIHMz5CF3gG387ebd_HOuEbxy8cVkQjZPzXdZvUD8I32VgDfY7FbAX3/exec"; 
 
 // --- GLOBAL VARIABLES ---
 let globalB2CData = [];

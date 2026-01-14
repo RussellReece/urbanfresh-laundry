@@ -20,7 +20,7 @@ function fetchAllData() {
 
         renderTableB2C(data.b2c);
         renderTableB2B(data.b2b);
-        calculateSummary(data.b2c, data.b2b);
+        calculateSummary(data.b2c, data.b2b); 
 
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
         const pendingB2B = data.b2b.find(o => o.status === "Menunggu Konfirmasi");
@@ -35,11 +35,64 @@ function fetchAllData() {
     .catch(err => console.error("Error fetching data:", err));
 }
 
-// --- RENDER TABLE B2C ---
+// --- CALCULATE SUMMARY (UPDATED) ---
+function calculateSummary(b2cData, b2bData) {
+    const allOrders = [...b2cData, ...b2bData];
+    
+    // 1. Total Pekerjaan Aktif (Semua yang berjalan)
+    const activeCount = allOrders.filter(o => 
+        o.status !== "Selesai" && 
+        o.status !== "Dibatalkan" &&
+        o.status !== "Proposal Ditolak"
+    ).length;
+
+    // 2. Pesanan Dibatalkan / Ditolak
+    const cancelledCount = allOrders.filter(o => 
+        o.status === "Dibatalkan" || 
+        o.status === "Proposal Ditolak"
+    ).length;
+
+    // 3. Permintaan Jadwal Tertunda (Pending)
+    const delayedCount = allOrders.filter(o => 
+        o.status === "Menunggu Konfirmasi" || 
+        o.status === "Menunggu Penjemputan"
+    ).length;
+
+    // 4. Pekerjaan Selesai Minggu Ini (Untuk Angka Besar H2)
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7); 
+
+    const completedThisWeek = allOrders.filter(o => {
+        if (o.status !== "Selesai") return false;
+        try {
+            const datePart = o.timestamp.split(',')[0]; 
+            const [day, month, year] = datePart.split('/'); 
+            const orderDate = new Date(`${year}-${month}-${day}`); 
+            return orderDate >= oneWeekAgo;
+        } catch (e) { return false; }
+    }).length;
+
+    // 5. Total Selesai B2C (Untuk Teks Kecil di Bawah) - FITUR BARU
+    const totalB2CCompleted = b2cData.filter(o => o.status === "Selesai").length;
+
+    // --- UPDATE DOM ---
+    document.getElementById('valActive').innerText = activeCount;
+    
+    document.getElementById('valCompleted').innerText = completedThisWeek; // Angka Besar (Mingguan)
+    // Update teks deskripsi di bawahnya
+    document.getElementById('descCompleted').innerText = `Total Pekerjaan Selesai : ${totalB2CCompleted} pekerjaan`;
+
+    document.getElementById('valDelayed').innerText = delayedCount;
+    document.getElementById('valCancelled').innerText = cancelledCount;
+}
+
+// --- FUNGSI RENDER TABLE & LAINNYA TETAP SAMA ---
+// (Copy sisa kode di bawah ini agar file admin.js Anda lengkap)
+
 function renderTableB2C(data) {
     const tbody = document.getElementById('tbodyB2C');
     tbody.innerHTML = "";
-    
     data.forEach(item => {
         let statusClass = "status-selesai"; 
         const s = item.status.toLowerCase();
@@ -60,39 +113,27 @@ function renderTableB2C(data) {
                 <td><span style="background:#e0f7fa; color:#006064; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
                 <td><span class="status-badge ${statusClass}">${item.status}</span></td>
                 <td>${item.timestamp}</td>
-                <td>
-                    <a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">
-                        ${addressText}
-                    </a>
-                </td>
+                <td><a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a></td>
                 <td>
                     <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button>
                     <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">Delete</button>
                 </td>
-            </tr>
-        `;
+            </tr>`;
         tbody.innerHTML += row;
     });
 }
 
-// --- RENDER TABLE B2B ---
 function renderTableB2B(data) {
     const tbody = document.getElementById('tbodyB2B');
     tbody.innerHTML = "";
-    
     data.forEach(item => {
         let statusClass = "status-selesai";
         const s = item.status.toLowerCase();
-        
-        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) {
-            statusClass = "status-pending";
-        }
-        if(s.includes("batal") || s.includes("tolak")) {
-            statusClass = "status-batal";
-        }
+        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) statusClass = "status-pending";
+        if(s.includes("batal") || s.includes("tolak")) statusClass = "status-batal";
 
         const addressText = item.address || "No Address";
-        const mapSearchLink = item.address ? `https://www.google.com/maps/search/${encodeURIComponent(item.address)}` : "#";
+        const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
         const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
 
         const row = `
@@ -104,30 +145,21 @@ function renderTableB2B(data) {
                 <td>${item.industry}</td>
                 <td>${item.weight}</td>
                 <td><span style="background:#495057; color:white; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
-                
-                <td>
-                    <a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">
-                        ${addressText}
-                    </a>
-                </td>
-
+                <td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td>
                 <td><span class="status-badge ${statusClass}">${item.status}</span></td>
                 <td>${item.timestamp}</td>
                 <td>
                     <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button>
                     <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">Delete</button>
                 </td>
-            </tr>
-        `;
+            </tr>`;
         tbody.innerHTML += row;
     });
 }
 
-// --- OPEN MODAL B2C ---
 function openEditModalB2C(id) {
     const data = globalB2CData.find(item => item.id === id);
     if (!data) return;
-    
     document.getElementById('editB2C_id_display').value = data.id || "";
     document.getElementById('editB2C_timestamp').value = data.timestamp || "";
     document.getElementById('editB2C_name').value = data.name;
@@ -137,15 +169,12 @@ function openEditModalB2C(id) {
     document.getElementById('editB2C_service').value = data.service;
     document.getElementById('editB2C_package').value = data.package;
     document.getElementById('editB2C_status').value = data.status;
-
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// --- OPEN MODAL B2B ---
 function openEditModalB2B(id) {
     const data = globalB2BData.find(item => item.id === id);
     if (!data) return;
-
     document.getElementById('editB2B_id_display').value = data.id || "";
     document.getElementById('editB2B_timestamp').value = data.timestamp || "";
     document.getElementById('editB2B_company').value = data.company;
@@ -158,11 +187,9 @@ function openEditModalB2B(id) {
     document.getElementById('editB2B_package').value = data.package;
     document.getElementById('editB2B_status').value = data.status;
     document.getElementById('editB2B_message').value = data.message;
-
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
-// --- UTILS & HANDLERS ---
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -172,7 +199,6 @@ function handleUpdateB2C(e) {
     const btn = e.target.querySelector('button');
     const originalText = btn.innerText;
     btn.innerText = "Menyimpan..."; btn.disabled = true;
-
     const payload = {
         type: "B2C",
         id: document.getElementById('editB2C_id_display').value,
@@ -192,7 +218,6 @@ function handleUpdateB2B(e) {
     const btn = e.target.querySelector('button');
     const originalText = btn.innerText;
     btn.innerText = "Menyimpan..."; btn.disabled = true;
-
     const payload = {
         type: "B2B",
         id: document.getElementById('editB2B_id_display').value,
@@ -255,42 +280,6 @@ function switchTab(type) {
     }
 }
 
-function calculateSummary(b2cData, b2bData) {
-    const allOrders = [...b2cData, ...b2bData];
-    const activeCount = allOrders.filter(o => 
-        o.status !== "Selesai" && 
-        o.status !== "Dibatalkan" &&
-        o.status !== "Proposal Ditolak"
-    ).length;
-
-    const cancelledCount = allOrders.filter(o => 
-        o.status === "Dibatalkan" || 
-        o.status === "Proposal Ditolak"
-    ).length;
-
-    const delayedCount = allOrders.filter(o => 
-        o.status === "Menunggu Konfirmasi" || 
-        o.status === "Menunggu Penjemputan"
-    ).length;
-    
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-    const completedCount = allOrders.filter(o => {
-        if (o.status !== "Selesai") return false;
-        try {
-            const [day, month, year] = o.timestamp.split(',')[0].split('/'); 
-            const orderDate = new Date(`${year}-${month}-${day}`);
-            return orderDate >= oneWeekAgo;
-        } catch (e) { return false; }
-    }).length;
-
-    document.getElementById('valActive').innerText = activeCount;
-    document.getElementById('valCompleted').innerText = completedCount;
-    document.getElementById('valDelayed').innerText = delayedCount;
-    document.getElementById('valCancelled').innerText = cancelledCount;
-}
-
 function renderCardB2C(order) {
     const container = document.getElementById('newOrderCardContainer');
     const packageDetails = {
@@ -339,12 +328,10 @@ function renderCardB2B(order) {
     `;
 }
 
-// --- UPDATE LOGIC KONFIRMASI (B2C vs B2B) ---
 function confirmOrder(id, type) {
-    let newStatus = "Menunggu Penjemputan"; // Default B2C
+    let newStatus = "Menunggu Penjemputan"; 
     let confirmMsg = "Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.";
 
-    // Jika B2B, ubah status ke 'Sedang Ditinjau'
     if (type === 'B2B') {
         newStatus = "Sedang Ditinjau";
         confirmMsg = "Konfirmasi proposal ini? Status akan diubah menjadi 'Sedang Ditinjau'.";
@@ -355,7 +342,6 @@ function confirmOrder(id, type) {
     const btn = document.querySelector('.btn-confirm');
     if(btn) { btn.innerText = "Memproses..."; btn.disabled = true; }
     
-    // Pastikan pakai encodeURIComponent untuk menangani spasi di URL
     fetch(`${APPS_SCRIPT_URL}?action=updateStatus&id=${id}&type=${type}&status=${encodeURIComponent(newStatus)}`)
     .then(res => res.json())
     .then(data => {

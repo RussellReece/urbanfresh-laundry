@@ -22,71 +22,48 @@ function fetchAllData() {
         renderTableB2B(data.b2b);
         calculateSummary(data.b2c, data.b2b);
 
-        const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
-        const pendingB2B = data.b2b.find(o => o.status === "Menunggu Konfirmasi");
+        // === LOGIKA BARU: ANTRIAN GABUNGAN ===
         
-        if (pendingB2C) renderCardB2C(pendingB2C);
-        else if (pendingB2B) renderCardB2B(pendingB2B);
-        else document.getElementById('newOrderCardContainer').innerHTML = `
-            <div class="order-card card-empty">
-                <div class="empty-text">Tidak ada pesanan<br>baru yang perlu<br>dikonfirmasi</div>
-            </div>`;
+        // 1. Ambil yang Pending dari B2C & tandai tipenya
+        const pendingB2C = data.b2c
+            .filter(o => o.status === "Menunggu Konfirmasi")
+            .map(o => ({...o, type: 'B2C'})); // Tambah label tipe
+
+        // 2. Ambil yang Pending dari B2B & tandai tipenya
+        const pendingB2B = data.b2b
+            .filter(o => o.status === "Menunggu Konfirmasi")
+            .map(o => ({...o, type: 'B2B'})); // Tambah label tipe
+
+        // 3. Gabungkan kedua array
+        const allPending = [...pendingB2C, ...pendingB2B];
+
+        // 4. Urutkan berdasarkan ID (Timestamp)
+        // ID formatnya "CO-123456" atau "CORP-123456". Angka di belakang adalah timestamp.
+        // Kita urutkan Ascending (A-B) agar yang "Terdahulu" (Angka kecil) muncul duluan.
+        allPending.sort((a, b) => {
+            const timeA = parseInt(a.id.split('-')[1]);
+            const timeB = parseInt(b.id.split('-')[1]);
+            return timeA - timeB; // Kecil ke Besar (Oldest First)
+        });
+
+        // 5. Tampilkan urutan pertama
+        if (allPending.length > 0) {
+            const priorityOrder = allPending[0]; // Ambil antrian terdepan
+            
+            if (priorityOrder.type === 'B2C') {
+                renderCardB2C(priorityOrder);
+            } else {
+                renderCardB2B(priorityOrder);
+            }
+        } else {
+            // Jika tidak ada antrian sama sekali
+            document.getElementById('newOrderCardContainer').innerHTML = `
+                <div class="order-card card-empty">
+                    <div class="empty-text">Tidak ada pesanan<br>baru yang perlu<br>dikonfirmasi</div>
+                </div>`;
+        }
     })
     .catch(err => console.error("Error fetching data:", err));
-}
-
-// --- CALCULATE SUMMARY (UPDATED) ---
-function calculateSummary(b2cData, b2bData) {
-    const allOrders = [...b2cData, ...b2bData];
-    
-    // 1. Total Pekerjaan Aktif
-    // (Semua status KECUALI "Selesai", "Dibatalkan", dan "Proposal Ditolak")
-    const activeCount = allOrders.filter(o => 
-        o.status !== "Selesai" && 
-        o.status !== "Dibatalkan" &&
-        o.status !== "Proposal Ditolak"
-    ).length;
-
-    // 2. Pesanan Dibatalkan / Proposal Ditolak
-    const cancelledCount = allOrders.filter(o => 
-        o.status === "Dibatalkan" || 
-        o.status === "Proposal Ditolak"
-    ).length;
-
-    // 3. Permintaan Jadwal Tertunda (Pending + Review)
-    // PERUBAHAN DISINI: Menambahkan "Sedang Ditinjau"
-    const delayedCount = allOrders.filter(o => 
-        o.status === "Menunggu Konfirmasi" || 
-        o.status === "Menunggu Penjemputan" ||
-        o.status === "Sedang Ditinjau"
-    ).length;
-
-    // 4. Pekerjaan Selesai Minggu Ini (Untuk Angka Besar H2)
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7); 
-
-    const completedThisWeek = allOrders.filter(o => {
-        if (o.status !== "Selesai") return false;
-        try {
-            const datePart = o.timestamp.split(',')[0]; 
-            const [day, month, year] = datePart.split('/'); 
-            const orderDate = new Date(`${year}-${month}-${day}`); 
-            return orderDate >= oneWeekAgo;
-        } catch (e) { return false; }
-    }).length;
-
-    // 5. Total Selesai B2C (Untuk Teks Kecil di Bawah)
-    const totalB2CCompleted = b2cData.filter(o => o.status === "Selesai").length;
-
-    // --- UPDATE DOM ---
-    document.getElementById('valActive').innerText = activeCount;
-    
-    document.getElementById('valCompleted').innerText = completedThisWeek; 
-    document.getElementById('descCompleted').innerText = `Total Pekerjaan Selesai : ${totalB2CCompleted} pekerjaan`;
-
-    document.getElementById('valDelayed').innerText = delayedCount;
-    document.getElementById('valCancelled').innerText = cancelledCount;
 }
 
 // --- RENDER TABLE B2C ---
@@ -307,6 +284,57 @@ function switchTab(type) {
         document.getElementById('tableB2C').style.display = 'none';
         document.getElementById('tableB2B').style.display = 'table';
     }
+}
+
+function calculateSummary(b2cData, b2bData) {
+    const allOrders = [...b2cData, ...b2bData];
+    
+    // 1. Total Pekerjaan Aktif
+    const activeCount = allOrders.filter(o => 
+        o.status !== "Selesai" && 
+        o.status !== "Dibatalkan" &&
+        o.status !== "Proposal Ditolak"
+    ).length;
+
+    // 2. Pesanan Dibatalkan / Proposal Ditolak
+    const cancelledCount = allOrders.filter(o => 
+        o.status === "Dibatalkan" || 
+        o.status === "Proposal Ditolak"
+    ).length;
+
+    // 3. Permintaan Jadwal Tertunda (Pending + Review)
+    const delayedCount = allOrders.filter(o => 
+        o.status === "Menunggu Konfirmasi" || 
+        o.status === "Menunggu Penjemputan" ||
+        o.status === "Sedang Ditinjau"
+    ).length;
+
+    // 4. Pekerjaan Selesai Minggu Ini (Untuk Angka Besar H2)
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7); 
+
+    const completedThisWeek = allOrders.filter(o => {
+        if (o.status !== "Selesai") return false;
+        try {
+            const datePart = o.timestamp.split(',')[0]; 
+            const [day, month, year] = datePart.split('/'); 
+            const orderDate = new Date(`${year}-${month}-${day}`); 
+            return orderDate >= oneWeekAgo;
+        } catch (e) { return false; }
+    }).length;
+
+    // 5. Total Selesai B2C (Untuk Teks Kecil di Bawah)
+    const totalB2CCompleted = b2cData.filter(o => o.status === "Selesai").length;
+
+    // --- UPDATE DOM ---
+    document.getElementById('valActive').innerText = activeCount;
+    
+    document.getElementById('valCompleted').innerText = completedThisWeek; 
+    document.getElementById('descCompleted').innerText = `Total Pekerjaan Selesai : ${totalB2CCompleted} pekerjaan`;
+
+    document.getElementById('valDelayed').innerText = delayedCount;
+    document.getElementById('valCancelled').innerText = cancelledCount;
 }
 
 function renderCardB2C(order) {

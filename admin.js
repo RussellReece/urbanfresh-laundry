@@ -1,15 +1,14 @@
-// ==========================================
-// CONFIGURATION
-// ==========================================
-// GANTI DENGAN URL APPS SCRIPT ANDA (YANG SUDAH DEPLOY NEW VERSION)
+// GANTI DENGAN URL APPS SCRIPT ANDA
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDCHnbLTiR3LUcYSGb_V2DXJt8PoDlXdz524yvpFsyyaNXp9bHGMDLtrsb2Tl0c0yE/exec"; 
 
-// ==========================================
-// MAIN LOGIC
-// ==========================================
+// --- GLOBAL VARIABLES (PENYIMPANAN DATA SEMENTARA) ---
+// Kita simpan data di sini agar tombol edit cukup panggil ID saja
+let globalB2CData = [];
+let globalB2BData = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     fetchAllData();
-    setInterval(fetchAllData, 5000); // Auto-refresh 5 detik
+    setInterval(fetchAllData, 5000); 
 });
 
 // --- FETCH DATA ---
@@ -17,14 +16,17 @@ function fetchAllData() {
     fetch(`${APPS_SCRIPT_URL}?action=getAllData`)
     .then(response => response.json())
     .then(data => {
-        // Render Tables
+        // 1. Simpan data ke variabel global
+        globalB2CData = data.b2c;
+        globalB2BData = data.b2b;
+
+        // 2. Render Tabel
         renderTableB2C(data.b2c);
         renderTableB2B(data.b2b);
         
-        // Update Summary
+        // 3. Update Lainnya
         calculateSummary(data.b2c, data.b2b);
 
-        // Update New Order Card
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
         const pendingB2B = data.b2b.find(o => o.status === "Menunggu Konfirmasi");
         
@@ -35,7 +37,7 @@ function fetchAllData() {
                 <div class="empty-text">Tidak ada pesanan<br>baru yang perlu<br>dikonfirmasi</div>
             </div>`;
     })
-    .catch(err => console.error("Error:", err));
+    .catch(err => console.error("Error fetching data:", err));
 }
 
 // --- RENDER TABLE B2C ---
@@ -44,7 +46,6 @@ function renderTableB2C(data) {
     tbody.innerHTML = "";
     
     data.forEach(item => {
-        // Tentukan Warna Badge Status
         let statusClass = "status-selesai"; 
         const s = item.status.toLowerCase();
         if(s.includes("menunggu") || s.includes("proses") || s.includes("sedang") || s.includes("siap") || s.includes("kurir")) {
@@ -52,10 +53,12 @@ function renderTableB2C(data) {
         }
         if(s.includes("batal")) statusClass = "status-batal";
         
-        // Simpan Data Lengkap ke String JSON (untuk Edit Modal)
-        // Kita gunakan replace untuk menghindari error kutip
-        const jsonData = JSON.stringify(item).replace(/"/g, '&quot;');
+        const linkUrl = (item.locationLink && item.locationLink !== "-") ? item.locationLink : "#";
+        const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
+        const addressText = item.address || "No Address";
 
+        // PERUBAHAN UTAMA: Kita hanya kirim ID ke fungsi onclick
+        // Tidak ada lagi JSON.stringify yang ribet di sini
         const row = `
             <tr>
                 <td>${item.name}</td>
@@ -64,9 +67,13 @@ function renderTableB2C(data) {
                 <td><span style="background:#e0f7fa; color:#006064; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
                 <td><span class="status-badge ${statusClass}">${item.status}</span></td>
                 <td>${item.timestamp}</td>
-                <td><a href="#" class="location-link" title="${item.address}">Location</a></td>
                 <td>
-                    <button class="btn-action btn-edit" onclick="openEditModalB2C('${jsonData}')">Edit</button>
+                    <a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">
+                        ${addressText}
+                    </a>
+                </td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button>
                     <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">Delete</button>
                 </td>
             </tr>
@@ -86,8 +93,7 @@ function renderTableB2B(data) {
         if(s.includes("menunggu") || s.includes("negosiasi")) statusClass = "status-pending";
         if(s.includes("batal")) statusClass = "status-batal";
 
-        const jsonData = JSON.stringify(item).replace(/"/g, '&quot;');
-
+        // PERUBAHAN UTAMA: Hanya kirim ID
         const row = `
             <tr>
                 <td>${item.company}</td>
@@ -101,7 +107,7 @@ function renderTableB2B(data) {
                 <td><span class="status-badge ${statusClass}">${item.status}</span></td>
                 <td>${item.timestamp}</td>
                 <td>
-                    <button class="btn-action btn-edit" onclick="openEditModalB2B('${jsonData}')">Edit</button>
+                    <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button>
                     <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">Delete</button>
                 </td>
             </tr>
@@ -110,40 +116,25 @@ function renderTableB2B(data) {
     });
 }
 
-// --- DELETE FUNCTION ---
-function deleteOrder(id, type) {
-    if(!confirm("Yakin ingin menghapus data ini secara permanen?")) return;
-    
-    fetch(`${APPS_SCRIPT_URL}?action=deleteOrder&id=${id}&type=${type}`)
-    .then(res => res.json())
-    .then(data => {
-        if(data.result === "success") {
-            alert("Data berhasil dihapus.");
-            fetchAllData();
-        } else {
-            alert("Gagal menghapus data.");
-        }
-    })
-    .catch(err => alert("Error koneksi."));
-}
+// --- FUNGSI OPEN MODAL B2C (BARU: CARI DATA BY ID) ---
+function openEditModalB2C(id) {
+    // Cari data asli di variabel global berdasarkan ID
+    const data = globalB2CData.find(item => item.id === id);
 
-// ==========================================
-// MODAL & EDIT FUNCTIONS
-// ==========================================
-
-// 1. OPEN MODAL B2C (LENGKAP)
-function openEditModalB2C(jsonString) {
-    const data = JSON.parse(jsonString);
+    if (!data) {
+        alert("Data tidak ditemukan di memori lokal. Coba refresh.");
+        return;
+    }
     
-    // Pastikan ID input HTML sudah sesuai dengan admin.html
     document.getElementById('editB2C_id_display').value = data.id || "";
     document.getElementById('editB2C_timestamp').value = data.timestamp || "";
-    
     document.getElementById('editB2C_name').value = data.name;
     document.getElementById('editB2C_phone').value = data.phone;
-    document.getElementById('editB2C_liveloclink').value = data.link || "-"; // Ambil Email dari JSON
-    document.getElementById('editB2C_address').value = data.address;
     
+    // Logika Email/Link
+    document.getElementById('editB2C_liveloclink').value = data.locationLink || "-";
+    
+    document.getElementById('editB2C_address').value = data.address;
     document.getElementById('editB2C_service').value = data.service;
     document.getElementById('editB2C_package').value = data.package;
     document.getElementById('editB2C_status').value = data.status;
@@ -151,31 +142,12 @@ function openEditModalB2C(jsonString) {
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// 2. SUBMIT EDIT B2C
-function handleUpdateB2C(e) {
-    e.preventDefault();
-    const btn = e.target.querySelector('button');
-    const originalText = btn.innerText;
-    btn.innerText = "Menyimpan..."; btn.disabled = true;
+// --- FUNGSI OPEN MODAL B2B (BARU: CARI DATA BY ID) ---
+function openEditModalB2B(id) {
+    // Cari data asli
+    const data = globalB2BData.find(item => item.id === id);
 
-    const payload = {
-        type: "B2C",
-        id: document.getElementById('editB2C_id_display').value,
-        name: document.getElementById('editB2C_name').value,
-        phone: document.getElementById('editB2C_phone').value,
-        liveloclink: document.getElementById('editB2C_liveloclink').value,
-        address: document.getElementById('editB2C_address').value,
-        service: document.getElementById('editB2C_service').value,
-        package: document.getElementById('editB2C_package').value,
-        status: document.getElementById('editB2C_status').value
-    };
-
-    sendUpdate(payload, 'modalEditB2C', btn, originalText);
-}
-
-// 3. OPEN MODAL B2B
-function openEditModalB2B(jsonString) {
-    const data = JSON.parse(jsonString);
+    if (!data) return;
 
     document.getElementById('editB2B_id').value = data.id;
     document.getElementById('editB2B_company').value = data.company;
@@ -192,7 +164,32 @@ function openEditModalB2B(jsonString) {
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
-// 4. SUBMIT EDIT B2B
+// --- FUNGSI LAINNYA TETAP SAMA ---
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function handleUpdateB2C(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
+    btn.innerText = "Menyimpan..."; btn.disabled = true;
+
+    const payload = {
+        type: "B2C",
+        id: document.getElementById('editB2C_id_display').value,
+        name: document.getElementById('editB2C_name').value,
+        phone: document.getElementById('editB2C_phone').value,
+        email: document.getElementById('editB2C_liveloclink').value, // Kirim link ke kolom email(H)
+        address: document.getElementById('editB2C_address').value,
+        service: document.getElementById('editB2C_service').value,
+        package: document.getElementById('editB2C_package').value,
+        status: document.getElementById('editB2C_status').value
+    };
+    sendUpdate(payload, 'modalEditB2C', btn, originalText);
+}
+
 function handleUpdateB2B(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button');
@@ -213,11 +210,9 @@ function handleUpdateB2B(e) {
         status: document.getElementById('editB2B_status').value,
         message: document.getElementById('editB2B_message').value
     };
-
     sendUpdate(payload, 'modalEditB2B', btn, originalText);
 }
 
-// 5. HELPER: SEND UPDATE
 function sendUpdate(payload, modalId, btn, btnText) {
     fetch(`${APPS_SCRIPT_URL}?action=updateData`, {
         method: "POST",
@@ -240,14 +235,16 @@ function sendUpdate(payload, modalId, btn, btnText) {
     });
 }
 
-// 6. HELPER: CLOSE MODAL
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+function deleteOrder(id, type) {
+    if(!confirm("Yakin ingin menghapus data ini secara permanen?")) return;
+    fetch(`${APPS_SCRIPT_URL}?action=deleteOrder&id=${id}&type=${type}`)
+    .then(res => res.json())
+    .then(data => {
+        if(data.result === "success") { alert("Data berhasil dihapus."); fetchAllData(); }
+        else { alert("Gagal menghapus data."); }
+    })
+    .catch(err => alert("Error koneksi."));
 }
-
-// ==========================================
-// OTHER UI FUNCTIONS
-// ==========================================
 
 function switchTab(type) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));

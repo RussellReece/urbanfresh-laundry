@@ -19,7 +19,7 @@ function fetchAllData() {
         globalB2BData = data.b2b;
 
         renderTableB2C(data.b2c);
-        renderTableB2B(data.b2b); // Perubahan ada di dalam fungsi ini
+        renderTableB2B(data.b2b); 
         calculateSummary(data.b2c, data.b2b);
 
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
@@ -35,7 +35,7 @@ function fetchAllData() {
     .catch(err => console.error("Error fetching data:", err));
 }
 
-// --- RENDER TABLE B2C (TETAP SAMA) ---
+// --- RENDER TABLE B2C ---
 function renderTableB2C(data) {
     const tbody = document.getElementById('tbodyB2C');
     tbody.innerHTML = "";
@@ -75,7 +75,7 @@ function renderTableB2C(data) {
     });
 }
 
-// --- RENDER TABLE B2B (DIPERBARUI LOCATION-NYA) ---
+// --- RENDER TABLE B2B ---
 function renderTableB2B(data) {
     const tbody = document.getElementById('tbodyB2B');
     tbody.innerHTML = "";
@@ -86,8 +86,6 @@ function renderTableB2B(data) {
         if(s.includes("menunggu") || s.includes("negosiasi")) statusClass = "status-pending";
         if(s.includes("batal")) statusClass = "status-batal";
 
-        // LOGIKA LOCATION B2B:
-        // Karena B2B tidak punya kolom khusus Link, kita buat Link Google Maps Search otomatis dari alamatnya.
         const addressText = item.address || "No Address";
         const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
         const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
@@ -138,12 +136,16 @@ function openEditModalB2C(id) {
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// --- OPEN MODAL B2B ---
+// --- OPEN MODAL B2B (DIPERBARUI DENGAN ID & TIMESTAMP) ---
 function openEditModalB2B(id) {
     const data = globalB2BData.find(item => item.id === id);
     if (!data) return;
 
-    document.getElementById('editB2B_id').value = data.id;
+    // ISI FIELD READ-ONLY BARU
+    document.getElementById('editB2B_id_display').value = data.id || "";
+    document.getElementById('editB2B_timestamp').value = data.timestamp || "";
+
+    // ISI FIELD LAINNYA
     document.getElementById('editB2B_company').value = data.company;
     document.getElementById('editB2B_pic').value = data.pic;
     document.getElementById('editB2B_email').value = data.email;
@@ -183,6 +185,7 @@ function handleUpdateB2C(e) {
     sendUpdate(payload, 'modalEditB2C', btn, originalText);
 }
 
+// --- HANDLE UPDATE B2B (DIPERBARUI MENGAMBIL DARI ID DISPLAY) ---
 function handleUpdateB2B(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button');
@@ -191,7 +194,8 @@ function handleUpdateB2B(e) {
 
     const payload = {
         type: "B2B",
-        id: document.getElementById('editB2B_id').value,
+        // Ambil ID dari field display yang baru
+        id: document.getElementById('editB2B_id_display').value, 
         company: document.getElementById('editB2B_company').value,
         pic: document.getElementById('editB2B_pic').value,
         email: document.getElementById('editB2B_email').value,

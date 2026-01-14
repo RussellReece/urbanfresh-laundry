@@ -1,8 +1,7 @@
 // GANTI DENGAN URL APPS SCRIPT ANDA
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDCHnbLTiR3LUcYSGb_V2DXJt8PoDlXdz524yvpFsyyaNXp9bHGMDLtrsb2Tl0c0yE/exec"; 
 
-// --- GLOBAL VARIABLES (PENYIMPANAN DATA SEMENTARA) ---
-// Kita simpan data di sini agar tombol edit cukup panggil ID saja
+// --- GLOBAL VARIABLES ---
 let globalB2CData = [];
 let globalB2BData = [];
 
@@ -16,15 +15,11 @@ function fetchAllData() {
     fetch(`${APPS_SCRIPT_URL}?action=getAllData`)
     .then(response => response.json())
     .then(data => {
-        // 1. Simpan data ke variabel global
         globalB2CData = data.b2c;
         globalB2BData = data.b2b;
 
-        // 2. Render Tabel
         renderTableB2C(data.b2c);
-        renderTableB2B(data.b2b);
-        
-        // 3. Update Lainnya
+        renderTableB2B(data.b2b); // Perubahan ada di dalam fungsi ini
         calculateSummary(data.b2c, data.b2b);
 
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
@@ -40,7 +35,7 @@ function fetchAllData() {
     .catch(err => console.error("Error fetching data:", err));
 }
 
-// --- RENDER TABLE B2C ---
+// --- RENDER TABLE B2C (TETAP SAMA) ---
 function renderTableB2C(data) {
     const tbody = document.getElementById('tbodyB2C');
     tbody.innerHTML = "";
@@ -57,8 +52,6 @@ function renderTableB2C(data) {
         const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
         const addressText = item.address || "No Address";
 
-        // PERUBAHAN UTAMA: Kita hanya kirim ID ke fungsi onclick
-        // Tidak ada lagi JSON.stringify yang ribet di sini
         const row = `
             <tr>
                 <td>${item.name}</td>
@@ -82,7 +75,7 @@ function renderTableB2C(data) {
     });
 }
 
-// --- RENDER TABLE B2B ---
+// --- RENDER TABLE B2B (DIPERBARUI LOCATION-NYA) ---
 function renderTableB2B(data) {
     const tbody = document.getElementById('tbodyB2B');
     tbody.innerHTML = "";
@@ -93,7 +86,12 @@ function renderTableB2B(data) {
         if(s.includes("menunggu") || s.includes("negosiasi")) statusClass = "status-pending";
         if(s.includes("batal")) statusClass = "status-batal";
 
-        // PERUBAHAN UTAMA: Hanya kirim ID
+        // LOGIKA LOCATION B2B:
+        // Karena B2B tidak punya kolom khusus Link, kita buat Link Google Maps Search otomatis dari alamatnya.
+        const addressText = item.address || "No Address";
+        const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
+        const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
+
         const row = `
             <tr>
                 <td>${item.company}</td>
@@ -103,7 +101,13 @@ function renderTableB2B(data) {
                 <td>${item.industry}</td>
                 <td>${item.weight}</td>
                 <td><span style="background:#495057; color:white; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
-                <td><a href="#" class="location-link" title="${item.address}">Location</a></td>
+                
+                <td>
+                    <a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">
+                        ${addressText}
+                    </a>
+                </td>
+
                 <td><span class="status-badge ${statusClass}">${item.status}</span></td>
                 <td>${item.timestamp}</td>
                 <td>
@@ -116,24 +120,16 @@ function renderTableB2B(data) {
     });
 }
 
-// --- FUNGSI OPEN MODAL B2C (BARU: CARI DATA BY ID) ---
+// --- OPEN MODAL B2C ---
 function openEditModalB2C(id) {
-    // Cari data asli di variabel global berdasarkan ID
     const data = globalB2CData.find(item => item.id === id);
-
-    if (!data) {
-        alert("Data tidak ditemukan di memori lokal. Coba refresh.");
-        return;
-    }
+    if (!data) return;
     
     document.getElementById('editB2C_id_display').value = data.id || "";
     document.getElementById('editB2C_timestamp').value = data.timestamp || "";
     document.getElementById('editB2C_name').value = data.name;
     document.getElementById('editB2C_phone').value = data.phone;
-    
-    // Logika Email/Link
     document.getElementById('editB2C_liveloclink').value = data.locationLink || "-";
-    
     document.getElementById('editB2C_address').value = data.address;
     document.getElementById('editB2C_service').value = data.service;
     document.getElementById('editB2C_package').value = data.package;
@@ -142,11 +138,9 @@ function openEditModalB2C(id) {
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// --- FUNGSI OPEN MODAL B2B (BARU: CARI DATA BY ID) ---
+// --- OPEN MODAL B2B ---
 function openEditModalB2B(id) {
-    // Cari data asli
     const data = globalB2BData.find(item => item.id === id);
-
     if (!data) return;
 
     document.getElementById('editB2B_id').value = data.id;
@@ -164,8 +158,7 @@ function openEditModalB2B(id) {
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
-// --- FUNGSI LAINNYA TETAP SAMA ---
-
+// --- UTILS & HANDLERS ---
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -181,7 +174,7 @@ function handleUpdateB2C(e) {
         id: document.getElementById('editB2C_id_display').value,
         name: document.getElementById('editB2C_name').value,
         phone: document.getElementById('editB2C_phone').value,
-        email: document.getElementById('editB2C_liveloclink').value, // Kirim link ke kolom email(H)
+        email: document.getElementById('editB2C_liveloclink').value, 
         address: document.getElementById('editB2C_address').value,
         service: document.getElementById('editB2C_service').value,
         package: document.getElementById('editB2C_package').value,

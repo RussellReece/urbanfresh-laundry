@@ -19,8 +19,8 @@ function fetchAllData() {
         globalB2BData = data.b2b;
 
         renderTableB2C(data.b2c);
-        renderTableB2B(data.b2b); 
-        calculateSummary(data.b2c, data.b2b);
+        renderTableB2B(data.b2b);
+        calculateSummary(data.b2c, data.b2b); // <-- Fungsi ini yang kita update logikanya
 
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
         const pendingB2B = data.b2b.find(o => o.status === "Menunggu Konfirmasi");
@@ -33,6 +33,59 @@ function fetchAllData() {
             </div>`;
     })
     .catch(err => console.error("Error fetching data:", err));
+}
+
+// --- CALCULATE SUMMARY (UPDATED) ---
+function calculateSummary(b2cData, b2bData) {
+    const allOrders = [...b2cData, ...b2bData];
+    
+    // 1. Total Pekerjaan Aktif
+    // (Semua status KECUALI "Selesai", "Dibatalkan", dan "Proposal Ditolak")
+    const activeCount = allOrders.filter(o => 
+        o.status !== "Selesai" && 
+        o.status !== "Dibatalkan" &&
+        o.status !== "Proposal Ditolak" // Tambahan: B2B Gagal tidak dihitung aktif
+    ).length;
+
+    // 2. Pesanan Dibatalkan / Proposal Ditolak
+    // (Status "Dibatalkan" ATAU "Proposal Ditolak")
+    const cancelledCount = allOrders.filter(o => 
+        o.status === "Dibatalkan" || 
+        o.status === "Proposal Ditolak" // Tambahan: Menghitung B2B yang ditolak
+    ).length;
+
+    // 3. Permintaan Jadwal Tertunda
+    // (Status "Menunggu Konfirmasi" ATAU "Menunggu Penjemputan")
+    const delayedCount = allOrders.filter(o => 
+        o.status === "Menunggu Konfirmasi" || 
+        o.status === "Menunggu Penjemputan"
+    ).length;
+
+    // 4. Pekerjaan Selesai Minggu Ini
+    // (Status "Selesai" DAN Tanggalnya dalam 7 hari terakhir)
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7); // Mundur 7 hari ke belakang
+
+    const completedCount = allOrders.filter(o => {
+        // B2B tidak punya status "Selesai" (kecuali Anda anggap Kontrak Disetujui = Selesai, tapi biasanya Selesai itu job laundry)
+        if (o.status !== "Selesai") return false;
+
+        try {
+            const datePart = o.timestamp.split(',')[0]; 
+            const [day, month, year] = datePart.split('/'); 
+            const orderDate = new Date(`${year}-${month}-${day}`); 
+            return orderDate >= oneWeekAgo;
+        } catch (e) {
+            return false; 
+        }
+    }).length;
+
+    // Update Angka di HTML
+    document.getElementById('valActive').innerText = activeCount;
+    document.getElementById('valCompleted').innerText = completedCount;
+    document.getElementById('valDelayed').innerText = delayedCount;
+    document.getElementById('valCancelled').innerText = cancelledCount;
 }
 
 // --- RENDER TABLE B2C ---
@@ -83,11 +136,17 @@ function renderTableB2B(data) {
     data.forEach(item => {
         let statusClass = "status-selesai";
         const s = item.status.toLowerCase();
-        if(s.includes("menunggu") || s.includes("negosiasi")) statusClass = "status-pending";
-        if(s.includes("batal")) statusClass = "status-batal";
+        
+        // Logika warna status B2B
+        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) {
+            statusClass = "status-pending";
+        }
+        if(s.includes("batal") || s.includes("tolak")) {
+            statusClass = "status-batal";
+        }
 
         const addressText = item.address || "No Address";
-        const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
+        const mapSearchLink = item.address ? `https://www.google.com/maps/search/${encodeURIComponent(item.address)}` : "#";
         const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
 
         const row = `
@@ -118,7 +177,7 @@ function renderTableB2B(data) {
     });
 }
 
-// --- OPEN MODAL B2C ---
+// --- OPEN MODAL & UTILS (TIDAK BERUBAH) ---
 function openEditModalB2C(id) {
     const data = globalB2CData.find(item => item.id === id);
     if (!data) return;
@@ -136,16 +195,12 @@ function openEditModalB2C(id) {
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// --- OPEN MODAL B2B (DIPERBARUI DENGAN ID & TIMESTAMP) ---
 function openEditModalB2B(id) {
     const data = globalB2BData.find(item => item.id === id);
     if (!data) return;
 
-    // ISI FIELD READ-ONLY BARU
     document.getElementById('editB2B_id_display').value = data.id || "";
     document.getElementById('editB2B_timestamp').value = data.timestamp || "";
-
-    // ISI FIELD LAINNYA
     document.getElementById('editB2B_company').value = data.company;
     document.getElementById('editB2B_pic').value = data.pic;
     document.getElementById('editB2B_email').value = data.email;
@@ -160,7 +215,6 @@ function openEditModalB2B(id) {
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
-// --- UTILS & HANDLERS ---
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -185,7 +239,6 @@ function handleUpdateB2C(e) {
     sendUpdate(payload, 'modalEditB2C', btn, originalText);
 }
 
-// --- HANDLE UPDATE B2B (DIPERBARUI MENGAMBIL DARI ID DISPLAY) ---
 function handleUpdateB2B(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button');
@@ -194,8 +247,7 @@ function handleUpdateB2B(e) {
 
     const payload = {
         type: "B2B",
-        // Ambil ID dari field display yang baru
-        id: document.getElementById('editB2B_id_display').value, 
+        id: document.getElementById('editB2B_id_display').value,
         company: document.getElementById('editB2B_company').value,
         pic: document.getElementById('editB2B_pic').value,
         email: document.getElementById('editB2B_email').value,
@@ -253,30 +305,6 @@ function switchTab(type) {
         document.getElementById('tableB2C').style.display = 'none';
         document.getElementById('tableB2B').style.display = 'table';
     }
-}
-
-function calculateSummary(b2cData, b2bData) {
-    const allOrders = [...b2cData, ...b2bData];
-    const activeCount = allOrders.filter(o => o.status !== "Selesai" && o.status !== "Dibatalkan").length;
-    const cancelledCount = allOrders.filter(o => o.status === "Dibatalkan").length;
-    const delayedCount = allOrders.filter(o => o.status === "Menunggu Konfirmasi" || o.status === "Menunggu Penjemputan").length;
-    
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-    const completedCount = allOrders.filter(o => {
-        if (o.status !== "Selesai") return false;
-        try {
-            const [day, month, year] = o.timestamp.split(',')[0].split('/'); 
-            const orderDate = new Date(`${year}-${month}-${day}`);
-            return orderDate >= oneWeekAgo;
-        } catch (e) { return false; }
-    }).length;
-
-    document.getElementById('valActive').innerText = activeCount;
-    document.getElementById('valCompleted').innerText = completedCount;
-    document.getElementById('valDelayed').innerText = delayedCount;
-    document.getElementById('valCancelled').innerText = cancelledCount;
 }
 
 function renderCardB2C(order) {

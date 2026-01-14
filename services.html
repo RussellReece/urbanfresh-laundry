@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services & Pricing - UrbanFresh</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html"><img src="icon/logo gambar.svg" alt="UrbanFresh Icon" class="nav-logo-icon"></a>
+
+            <a href="index.html"><img src="icon/logo tulisan.svg" alt="UrbanFresh Text" class="nav-logo-text"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="services.html" class="active">Services & Pricing</a>
+            <a href="track.html">Track Order</a>
+            <a href="corporate.html">Corporate Partnership</a>
+        </div>
+    </nav>
+
+    <section class="pricing-section">
+        <div class="section-header-centered">
+            <span class="pricing-label">pricing</span>
+            <h1 class="pricing-title">Services & Packages</h1>
+        </div>
+
+        <div class="pricing-container">
+
+            <div class="pricing-card" onclick="selectCard(this, 'Standard')">
+                <div class="card-header">
+                    <h3 class="package-name">standard</h3>
+                    <div class="price-tag"><span id="price-std">10K</span> <span class="unit" id="unit-std">/kg</span>
+                    </div>
+                </div>
+                <hr class="divider">
+                <ul class="feature-list">
+                    <li><i class="fa-solid fa-check"></i> Layanan Dasar</li>
+                    <li><i class="fa-solid fa-check"></i> Deterjen Standar</li>
+                    <li><i class="fa-solid fa-check"></i> Estimasi 3 Hari</li>
+                </ul>
+                <button class="choose-btn"
+                    onclick="event.stopPropagation(); handleChooseClick('Standard')">Choose</button>
+            </div>
+
+            <div class="pricing-card active" onclick="selectCard(this, 'Express')">
+                <div class="card-header">
+                    <h3 class="package-name">express</h3>
+                    <div class="price-tag"><span id="price-exp">15K</span> <span class="unit" id="unit-exp">/kg</span>
+                    </div>
+                </div>
+                <hr class="divider">
+                <ul class="feature-list">
+                    <li><i class="fa-solid fa-check"></i> Layanan Prioritas</li>
+                    <li><i class="fa-solid fa-check"></i> Deterjen Premium</li>
+                    <li><i class="fa-solid fa-check"></i> Estimasi 1 Hari</li>
+                </ul>
+                <button class="choose-btn"
+                    onclick="event.stopPropagation(); handleChooseClick('Express')">Choose</button>
+            </div>
+
+            <div class="pricing-card" onclick="selectCard(this, 'Premium')">
+                <div class="card-header">
+                    <h3 class="package-name">premium</h3>
+                    <div class="price-tag"><span id="price-prem">20K</span> <span class="unit" id="unit-prem">/kg</span>
+                    </div>
+                </div>
+                <hr class="divider">
+                <ul class="feature-list">
+                    <li><i class="fa-solid fa-check"></i> Perawatan Khusus</li>
+                    <li><i class="fa-solid fa-check"></i> Deterjen Eco-Friendly</li>
+                    <li><i class="fa-solid fa-check"></i> Estimasi 6 Jam</li>
+                </ul>
+                <button class="choose-btn"
+                    onclick="event.stopPropagation(); handleChooseClick('Premium')">Choose</button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="corporate-banner-section">
+        <div class="corporate-banner">
+            <div class="corp-icon">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+
+            <h2 class="corp-title">Program Kemitraan Perusahaan</h2>
+
+            <p class="corp-desc">
+                Tingkatkan layanan binatu Anda dengan program kemitraan perusahaan kami yang disesuaikan, menawarkan
+                diskon eksklusif dan layanan prioritas untuk bisnis.
+            </p>
+
+            <div class="tiers-grid">
+                <div class="tier-item">
+                    <h4 class="tier-name silver">Kemitraan Silver</h4>
+                    <div class="tier-discount">10% DISKON</div>
+                    <p class="tier-detail">Ideal untuk kantor kecil. Nikmati diskon reguler untuk pesanan massal.</p>
+                </div>
+
+                <div class="tier-item">
+                    <h4 class="tier-name gold">Kemitraan Gold</h4>
+                    <div class="tier-discount">20% DISKON</div>
+                    <p class="tier-detail">Sempurna untuk bisnis menengah. Manajer akun khusus dan layanan prioritas.
+                    </p>
+                </div>
+
+                <div class="tier-item">
+                    <h4 class="tier-name platinum">Kemitraan Platinum</h4>
+                    <div class="tier-discount">30% DISKON</div>
+                    <p class="tier-detail">Disesuaikan untuk perusahaan besar. Layanan khusus, fleksibilitas utama, dan
+                        penghematan tertinggi.</p>
+                </div>
+            </div>
+
+            <div class="corp-cta">
+                <a href="corporate.html" class="apply-btn">Ajukan Sekarang</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <div class="brand-wrapper">
+                    <img src="icon/bubbles.svg" alt="Bubbles Decoration" class="footer-bubbles-img">
+
+                    <img src="icon/logo tulisan putih.svg" alt="UrbanFresh Logo" class="footer-logo-text">
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>About us</h4>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Creators</a></li>
+                    <li><a href="#">Philosophy</a></li>
+                    <li><a href="index.html">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">Our team</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="index.html#how-it-works">How it works</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html?service=Wash%20%26%20Fold">Wash & Fold</a></li>
+                    <li><a href="services.html?service=Dry%20Cleaning">Dry Cleaning</a></li>
+                    <li><a href="services.html?service=Shoe%20Care">Shoe Care</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Check us out</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="orderModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+            <h3>Detail Pemesanan</h3>
+            <p>Lengkapi data agar pesanan tercatat otomatis.</p>
+
+            <form id="quickOrderForm" onsubmit="submitOrder(event)">
+
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user input-icon"></i>
+                        <input type="text" id="modalName" placeholder="Nama Anda" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor WhatsApp</label>
+                    <div class="input-wrapper">
+                        <i class="fa-brands fa-whatsapp input-icon"></i>
+                        <input type="tel" id="modalPhone" placeholder="08..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat Penjemputan</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-map-location-dot input-icon"></i>
+                        <input type="text" id="modalAddress" placeholder="Jalan, Nomor Rumah, Patokan..." required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Pilih Layanan</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-shirt input-icon"></i>
+                        <select id="modalServiceSelect" required>
+                            <option value="" disabled selected>-- Pilih Layanan --</option>
+                            <option value="Wash & Fold">Wash & Fold (Cuci Lipat)</option>
+                            <option value="Dry Cleaning">Dry Cleaning</option>
+                            <option value="Shoe Care">Shoe Care (Cuci Sepatu)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Pilih Paket</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-box-open input-icon"></i>
+                        <select id="modalPackageSelect" required>
+                            <option value="Standard">Standard (Regular)</option>
+                            <option value="Express">Express (Cepat)</option>
+                            <option value="Premium">Premium (Kilat/Khusus)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-proposal-btn" id="btnSubmitOrder">Dapatkan Order ID & Pesan</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Script Khusus Halaman Services untuk interaksi Kartu
+        function selectCard(cardElement, packageName) {
+            // 1. Hapus kelas 'active' dari semua kartu
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => card.classList.remove('active'));
+
+            // 2. Tambahkan kelas 'active' ke kartu yang diklik
+            cardElement.classList.add('active');
+        }
+        /* --- DYNAMIC PRICING LOGIC --- */
+
+        // 1. DATABASE HARGA & SATUAN
+        // Anda bisa mengubah nominal harga di sini sesuai keinginan
+        const pricingData = {
+            "Wash & Fold": {
+                unit: "/kg",
+                prices: { Standard: "10K", Express: "15K", Premium: "20K" },
+                desc: "Cuci bersih, kering, dan lipat rapi."
+            },
+            "Dry Cleaning": {
+                unit: "/pcs",
+                prices: { Standard: "25K", Express: "35K", Premium: "50K" }, // Harga contoh per potong
+                desc: "Perawatan khusus untuk pakaian formal/delicate."
+            },
+            "Shoe Care": {
+                unit: "/pasang",
+                prices: { Standard: "35K", Express: "50K", Premium: "75K" }, // Harga contoh per pasang
+                desc: "Pembersihan mendalam untuk sepatu kesayangan."
+            }
+        };
+
+        // 2. FUNGSI UPDATE HALAMAN SAAT LOAD
+        // Dijalankan otomatis saat halaman services.html dibuka
+        document.addEventListener("DOMContentLoaded", function () {
+            // Cek apakah kita sedang di halaman services.html
+            if (window.location.pathname.includes("services.html")) {
+                updateServiceDisplay();
+            }
+        });
+
+        function updateServiceDisplay() {
+            // Ambil parameter service dari URL (contoh: ?service=Shoe Care)
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentService = urlParams.get('service');
+
+            // Default ke Wash & Fold jika tidak ada parameter atau layanan tidak dikenal
+            if (!currentService || !pricingData[currentService]) {
+                currentService = "Wash & Fold";
+            }
+
+            // Ambil data dari database di atas
+            const data = pricingData[currentService];
+
+            // Update Judul Halaman (Opsional, agar user tahu mereka lihat harga apa)
+            const pageTitle = document.querySelector('.pricing-title');
+            if (pageTitle) pageTitle.innerText = `Paket ${currentService}`;
+
+            // Update Harga & Satuan di Kartu
+            // Standard
+            document.getElementById('price-std').innerText = data.prices.Standard;
+            document.getElementById('unit-std').innerText = data.unit;
+
+            // Express
+            document.getElementById('price-exp').innerText = data.prices.Express;
+            document.getElementById('unit-exp').innerText = data.unit;
+
+            // Premium
+            document.getElementById('price-prem').innerText = data.prices.Premium;
+            document.getElementById('unit-prem').innerText = data.unit;
+        }
+
+
+        // 3. LOGIKA TOMBOL "CHOOSE" BARU
+        // Ini memastikan Form Modal terisi sesuai layanan yang sedang dilihat
+        function handleChooseClick(selectedPackage) {
+            // Ambil service yang sedang aktif dari URL
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentService = urlParams.get('service');
+
+            if (!currentService || !pricingData[currentService]) {
+                currentService = "Wash & Fold";
+            }
+
+            // Buka Modal
+            const modal = document.getElementById('orderModal');
+            modal.style.display = 'flex';
+
+            // Set Dropdown Form secara Otomatis
+            const serviceSelect = document.getElementById('modalServiceSelect');
+            const packageSelect = document.getElementById('modalPackageSelect');
+
+            // Paksa pilih Layanan sesuai halaman
+            serviceSelect.value = currentService;
+
+            // Paksa pilih Paket sesuai tombol yang diklik
+            packageSelect.value = selectedPackage;
+        }
+    </script>
+</body>
+
+</html>

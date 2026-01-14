@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corporate Partnership - UrbanFresh</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html"
+          ><img
+            src="icon/logo gambar.svg"
+            alt="UrbanFresh Icon"
+            class="nav-logo-icon"
+        /></a>
+
+        <a href="index.html"
+          ><img
+            src="icon/logo tulisan.svg"
+            alt="UrbanFresh Text"
+            class="nav-logo-text"
+        /></a>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services & Pricing</a>
+        <a href="track.html">Track Order</a>
+        <a href="corporate.html" class="active">Corporate Partnership</a>
+      </div>
+    </nav>
+
+    <section class="corporate-section">
+      <div class="corporate-container">
+        <div class="corporate-benefits">
+          <h1 class="corp-heading">Manfaat Kemitraan<br />Korporat</h1>
+
+          <p class="corp-intro">
+            Tingkatkan operasional bisnis Anda dengan layanan binatu profesional
+            UrbanFresh. Temukan paket yang sesuai dengan kebutuhan Anda.
+          </p>
+
+          <div class="benefit-card">
+            <h3 class="package-title">Paket Silver</h3>
+            <ul class="benefit-list">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Diskon Volume 10% untuk
+                layanan standar
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Pengambilan dan
+                pengiriman mingguan gratis
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Prioritas layanan
+                pelanggan
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Pelaporan bulanan yang
+                disederhanakan
+              </li>
+            </ul>
+          </div>
+
+          <div class="benefit-card">
+            <h3 class="package-title">Paket Gold</h3>
+            <ul class="benefit-list">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Diskon Volume 15% untuk
+                semua layanan
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Pengambilan dan
+                pengiriman fleksibel sesuai jadwal
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Manajer akun khusus
+                24/7
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Opsi penagihan yang
+                dapat disesuaikan
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Layanan express gratis
+              </li>
+            </ul>
+          </div>
+
+          <div class="benefit-card">
+            <h3 class="package-title">Paket Platinum</h3>
+            <ul class="benefit-list">
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Diskon Volume 20% untuk
+                semua layanan
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Pengambilan dan
+                pengiriman setiap hari
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Dukungan VIP dan
+                respons cepat
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Layanan konsultasi
+                manajemen linen
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Akses awal ke layanan
+                baru
+              </li>
+              <li>
+                <i class="fa-solid fa-circle-check"></i> Penyesuaian kebutuhan
+                khusus
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="corporate-form-wrapper">
+          <div class="form-card">
+            <h2 class="form-heading">Kirimkan Proposal<br />Anda</h2>
+            <p class="form-intro">
+              Isi formulir di bawah ini dan tim kami akan segera menghubungi
+              Anda.
+            </p>
+
+            <form id="corporateForm" onsubmit="handleCorporateSubmit(event)">
+              <div class="form-group">
+                <label>Nama Perusahaan</label>
+                <div class="input-wrapper">
+                  <i class="fa-regular fa-building input-icon"></i>
+                  <input
+                    type="text"
+                    id="corpName"
+                    placeholder="Nama Perusahaan Anda"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Nama PIC</label>
+                <div class="input-wrapper">
+                  <i class="fa-regular fa-user input-icon"></i>
+                  <input
+                    type="text"
+                    id="corpPIC"
+                    placeholder="Nama Perwakilan"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label
+                  >Alamat Email
+                  <span style="color: #ff6b6b">(Penting)</span></label
+                >
+                <div class="input-wrapper">
+                  <i class="fa-regular fa-envelope input-icon"></i>
+                  <input
+                    type="email"
+                    id="corpEmail"
+                    placeholder="your.email@example.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Jenis Industri</label>
+                <div class="input-wrapper">
+                  <select id="corpIndustry">
+                    <option value="" disabled selected>
+                      Pilih Jenis Industri
+                    </option>
+                    <option value="Hotel">Perhotelan</option>
+                    <option value="Kantor">Perkantoran</option>
+                    <option value="Restoran">Restoran/F&B</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Perkiraan Berat Cucian per Bulan</label>
+                <div class="input-wrapper">
+                  <select id="corpWeight">
+                    <option value="" disabled selected>
+                      Pilih Perkiraan Berat
+                    </option>
+                    <option value="<50kg">Kurang dari 50 kg</option>
+                    <option value="50-200kg">50 - 200 kg</option>
+                    <option value=">200kg">Lebih dari 200 kg</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Nomor Telepon</label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-phone input-icon"></i>
+                  <input
+                    type="tel"
+                    id="corpPhone"
+                    placeholder="e.g., +628123456789"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Pilih Paket Kemitraan</label>
+                <div class="input-wrapper">
+                  <select id="corpPackage" required> <option value="" disabled selected>Pilih Paket</option>
+                    <option value="Silver">Silver (Diskon 10%)</option>
+                    <option value="Gold">Gold (Diskon 15%)</option>
+                    <option value="Platinum">Platinum (Diskon 20%)</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Alamat Perusahaan</label>
+                <div class="input-wrapper">
+                  <i class="fa-solid fa-map-pin input-icon"></i>
+                  <input type="text" id="corpAddress" placeholder="Alamat Lengkap Kantor" required> </div>
+              </div>
+
+              <div class="form-group">
+                <label>Pesan Tambahan</label>
+                <div class="input-wrapper textarea-wrapper">
+                  <textarea
+                    id="corpMessage"
+                    rows="4"
+                    placeholder="Beritahu kami lebih banyak..."
+                  ></textarea>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="submit-proposal-btn"
+                id="btnSubmitCorp"
+              >
+                Kirim Proposal
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <div class="brand-wrapper">
+                    <img src="icon/bubbles.svg" alt="Bubbles Decoration" class="footer-bubbles-img">
+
+                    <img src="icon/logo tulisan putih.svg" alt="UrbanFresh Logo" class="footer-logo-text">
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>About us</h4>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Creators</a></li>
+                    <li><a href="#">Philosophy</a></li>
+                    <li><a href="index.html">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">Our team</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="index.html#how-it-works">How it works</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html?service=Wash%20%26%20Fold">Wash & Fold</a></li>
+                    <li><a href="services.html?service=Dry%20Cleaning">Dry Cleaning</a></li>
+                    <li><a href="services.html?service=Shoe%20Care">Shoe Care</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Check us out</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

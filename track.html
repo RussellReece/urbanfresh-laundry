@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - UrbanFresh</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html"><img src="icon/logo gambar.svg" alt="UrbanFresh Icon" class="nav-logo-icon"></a>
+
+            <a href="index.html"><img src="icon/logo tulisan.svg" alt="UrbanFresh Text" class="nav-logo-text"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="services.html">Services & Pricing</a>
+            <a href="track.html" class="active">Track Order</a>
+            <a href="corporate.html">Corporate Partnership</a>
+        </div>
+    </nav>
+
+    <section class="track-order-section">
+        <div class="track-container">
+            
+            <div class="track-image">
+                <img id="trackingIllustration" src="images/Thinking face-bro 1.png" alt="Thinking about laundry">
+            </div>
+
+            <div class="track-content">
+                
+                <div id="trackInputState">
+                    <h1 class="track-heading">Lacak Status<br>Pesanan Anda</h1>
+                    
+                    <p class="track-subtext">
+                        Masukkan nomor ID pesanan Anda untuk mengetahui status pengerjaan cucian secara real-time tanpa perlu login.
+                    </p>
+
+                    <div class="input-group">
+                        <input type="text" id="orderIdInput" placeholder="Masukkan Order ID (Contoh: UF001)">
+                        <button class="track-btn" onclick="performTracking()">Track</button>
+                    </div>
+                    <p id="error-message" style="color: #ff4d4d; display: none; font-size: 12px; margin-top: 10px;">Kode pesanan tidak ditemukan.</p>
+                </div>
+
+                <div id="trackResultState" style="display: none;">
+                    <h2 class="result-heading">Detail Pesanan</h2>
+
+                    <div class="order-details-card">
+                        <div class="detail-row">
+                            <span class="label">Nama Pelanggan:</span>
+                            <span class="value" id="resName">Budi Santoso</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Tanggal Pesanan:</span>
+                            <span class="value" id="resDate">12 Oktober 2025</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Status:</span>
+                            <span class="status-badge" id="resStatus">Sedang Dicuci</span>
+                        </div>
+                    </div>
+
+                    <button class="track-btn secondary" onclick="resetTracking()">Cek Pesanan Lain</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <div class="brand-wrapper">
+                    <img src="icon/bubbles.svg" alt="Bubbles Decoration" class="footer-bubbles-img">
+
+                    <img src="icon/logo tulisan putih.svg" alt="UrbanFresh Logo" class="footer-logo-text">
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>About us</h4>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Creators</a></li>
+                    <li><a href="#">Philosophy</a></li>
+                    <li><a href="index.html">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">Our team</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="index.html#how-it-works">How it works</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html?service=Wash%20%26%20Fold">Wash & Fold</a></li>
+                    <li><a href="services.html?service=Dry%20Cleaning">Dry Cleaning</a></li>
+                    <li><a href="services.html?service=Shoe%20Care">Shoe Care</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Check us out</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanFresh Laundry</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html"><img src="icon/logo gambar.svg" alt="UrbanFresh Icon" class="nav-logo-icon"></a>
+
+            <a href="index.html"><img src="icon/logo tulisan.svg" alt="UrbanFresh Text" class="nav-logo-text"></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="services.html">Services & Pricing</a>
+            <a href="track.html">Track Order</a>
+            <a href="corporate.html">Corporate Partnership</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content" id="hero-content">
+            <div class="badge-container">
+                <span class="hero-badge">Experience hassle-free laundry with UrbanFresh</span>
+            </div>
+            
+            <h1>smart cleaning for<br>busy people</h1>
+            
+            <p>Nikmati cucian tanpa repot dengan UrbanFresh. Layanan laundry premium yang modern, bersih, dan minimalis. Cuci dan lipat premium, cuci kering, dan perawatan sepatu di harga terjangkau. Pesan sekarang juga!</p>
+            
+            <a href="#" class="cta-button" onclick="openWhatsApp('General')">
+                <i class="fab fa-whatsapp"></i> Book Now via Whatsapp
+            </a>
+        </div>
+
+        <div class="hero-image-container">
+            <img src="images/washingmachine.svg" alt="Smart Laundry" class="hero-img-full">
+        </div>
+    </header>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-header-centered">
+            <span class="sub-title-white">how it works</span>
+            <h2 class="main-title-white">Get it done in 4 steps</h2>
+        </div>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <span class="step-number">step 1</span>
+                <h3 class="step-title">Order Via Whatsapp</h3>
+                <div class="step-img-wrapper">
+                    <img src="images/orderviawhatsapp.svg" alt="Order Whatsapp">
+                </div>
+                <p class="step-desc">Kirimkan kebutuhan cucian Anda kepada kami dan jadwalkan pengambilan dengan mudah.
+                </p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">step 2</span>
+                <h3 class="step-title">We Pickup</h3>
+                <div class="step-img-wrapper">
+                    <img src="images/wepickup.svg" alt="Pickup">
+                </div>
+                <p class="step-desc">Tim kami akan mengambil cucian kotor dari depan pintu rumah Anda sesuai kenyamanan.
+                </p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">step 3</span>
+                <h3 class="step-title">We Clean</h3>
+                <div class="step-img-wrapper">
+                    <img src="images/weclean.svg" alt="Clean">
+                </div>
+                <p class="step-desc">Pakaian Anda dicuci menggunakan deterjen premium dan peralatan modern.</p>
+            </div>
+
+            <div class="step-card">
+                <span class="step-number">step 4</span>
+                <h3 class="step-title">We Deliver</h3>
+                <div class="step-img-wrapper">
+                    <img src="images/wedeliver.svg" alt="Deliver">
+                </div>
+                <p class="step-desc">Menerima pakaian bersih, rapi, dan wangi siap pakai diantar kembali.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="services">
+        <div class="section-header-centered">
+            <span class="sub-title-blue">our service</span>
+            <h2 class="main-title-blue">Layanan Kami</h2>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="card-image">
+                    <img src="images/washandfold.png" alt="Wash and Fold">
+                    <div class="service-icon-float">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                </div>
+                <div class="service-content">
+                    <h3>Wash & Fold</h3>
+                    <p>Everyday laundry, perfectly washed, dried, and folded to perfection, delivered to your door.</p>
+                    <a href="services.html?service=Wash%20%26%20Fold" class="learn-more">Learn More</a>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="card-image">
+                    <img src="images/dryclean.png" alt="Dry Cleaning">
+                    <div class="service-icon-float">
+                        <i class="fa-solid fa-vest"></i>
+                    </div>
+                </div>
+                <div class="service-content">
+                    <h3>Dry Cleaning</h3>
+                    <p>Expert care for delicate garments and special items, retaining their quality and freshness.</p>
+                    <a href="services.html?service=Dry%20Cleaning" class="learn-more">Learn More</a>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="card-image">
+                    <img src="images/shoecare.png" alt="Shoe Care">
+                    <div class="service-icon-float">
+                        <i class="fa-solid fa-shoe-prints"></i>
+                    </div>
+                </div>
+                <div class="service-content">
+                    <h3>Shoe Care</h3>
+                    <p>From everyday sneakers to luxury footwear, we meticulously restore your shoes to their best look.
+                    </p>
+                    <a href="services.html?service=Shoe%20Care" class="learn-more">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+
+            <div class="footer-brand">
+                <div class="brand-wrapper">
+                    <img src="icon/bubbles.svg" alt="Bubbles Decoration" class="footer-bubbles-img">
+
+                    <img src="icon/logo tulisan putih.svg" alt="UrbanFresh Logo" class="footer-logo-text">
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>About us</h4>
+                <ul>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Creators</a></li>
+                    <li><a href="#">Philosophy</a></li>
+                    <li><a href="#hero-content">Contact us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">Our team</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#how-it-works">How it works</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="services.html?service=Wash%20%26%20Fold">Wash & Fold</a></li>
+                    <li><a href="services.html?service=Dry%20Cleaning">Dry Cleaning</a></li>
+                    <li><a href="services.html?service=Shoe%20Care">Shoe Care</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Check us out</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="orderModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeOrderModal()">&times;</span>
+        <h3>Detail Pemesanan</h3>
+        <p>Lengkapi data agar pesanan tercatat otomatis.</p>
+        
+        <form id="quickOrderForm" onsubmit="submitOrder(event)">
+            
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user input-icon"></i>
+                    <input type="text" id="modalName" placeholder="Nama Anda" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nomor WhatsApp</label>
+                <div class="input-wrapper">
+                    <i class="fa-brands fa-whatsapp input-icon"></i>
+                    <input type="tel" id="modalPhone" placeholder="08..." required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Penjemputan</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-map-location-dot input-icon"></i>
+                    <input type="text" id="modalAddress" placeholder="Jalan, Nomor Rumah, Patokan..." required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Pilih Layanan</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-shirt input-icon"></i>
+                    <select id="modalServiceSelect" required>
+                        <option value="" disabled selected>-- Pilih Layanan --</option>
+                        <option value="Wash & Fold">Wash & Fold (Cuci Lipat)</option>
+                        <option value="Dry Cleaning">Dry Cleaning</option>
+                        <option value="Shoe Care">Shoe Care (Cuci Sepatu)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Pilih Paket</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-box-open input-icon"></i>
+                    <select id="modalPackageSelect" required>
+                        <option value="Standard">Standard (Regular)</option>
+                        <option value="Express">Express (Cepat)</option>
+                        <option value="Premium">Premium (Kilat/Khusus)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down select-icon"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-proposal-btn" id="btnSubmitOrder">Dapatkan Order ID & Pesan</button>
+        </form>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

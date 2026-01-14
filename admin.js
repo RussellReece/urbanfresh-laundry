@@ -20,7 +20,7 @@ function fetchAllData() {
 
         renderTableB2C(data.b2c);
         renderTableB2B(data.b2b);
-        calculateSummary(data.b2c, data.b2b); // <-- Fungsi ini yang kita update logikanya
+        calculateSummary(data.b2c, data.b2b);
 
         const pendingB2C = data.b2c.find(o => o.status === "Menunggu Konfirmasi");
         const pendingB2B = data.b2b.find(o => o.status === "Menunggu Konfirmasi");
@@ -33,59 +33,6 @@ function fetchAllData() {
             </div>`;
     })
     .catch(err => console.error("Error fetching data:", err));
-}
-
-// --- CALCULATE SUMMARY (UPDATED) ---
-function calculateSummary(b2cData, b2bData) {
-    const allOrders = [...b2cData, ...b2bData];
-    
-    // 1. Total Pekerjaan Aktif
-    // (Semua status KECUALI "Selesai", "Dibatalkan", dan "Proposal Ditolak")
-    const activeCount = allOrders.filter(o => 
-        o.status !== "Selesai" && 
-        o.status !== "Dibatalkan" &&
-        o.status !== "Proposal Ditolak" // Tambahan: B2B Gagal tidak dihitung aktif
-    ).length;
-
-    // 2. Pesanan Dibatalkan / Proposal Ditolak
-    // (Status "Dibatalkan" ATAU "Proposal Ditolak")
-    const cancelledCount = allOrders.filter(o => 
-        o.status === "Dibatalkan" || 
-        o.status === "Proposal Ditolak" // Tambahan: Menghitung B2B yang ditolak
-    ).length;
-
-    // 3. Permintaan Jadwal Tertunda
-    // (Status "Menunggu Konfirmasi" ATAU "Menunggu Penjemputan")
-    const delayedCount = allOrders.filter(o => 
-        o.status === "Menunggu Konfirmasi" || 
-        o.status === "Menunggu Penjemputan"
-    ).length;
-
-    // 4. Pekerjaan Selesai Minggu Ini
-    // (Status "Selesai" DAN Tanggalnya dalam 7 hari terakhir)
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7); // Mundur 7 hari ke belakang
-
-    const completedCount = allOrders.filter(o => {
-        // B2B tidak punya status "Selesai" (kecuali Anda anggap Kontrak Disetujui = Selesai, tapi biasanya Selesai itu job laundry)
-        if (o.status !== "Selesai") return false;
-
-        try {
-            const datePart = o.timestamp.split(',')[0]; 
-            const [day, month, year] = datePart.split('/'); 
-            const orderDate = new Date(`${year}-${month}-${day}`); 
-            return orderDate >= oneWeekAgo;
-        } catch (e) {
-            return false; 
-        }
-    }).length;
-
-    // Update Angka di HTML
-    document.getElementById('valActive').innerText = activeCount;
-    document.getElementById('valCompleted').innerText = completedCount;
-    document.getElementById('valDelayed').innerText = delayedCount;
-    document.getElementById('valCancelled').innerText = cancelledCount;
 }
 
 // --- RENDER TABLE B2C ---
@@ -137,7 +84,6 @@ function renderTableB2B(data) {
         let statusClass = "status-selesai";
         const s = item.status.toLowerCase();
         
-        // Logika warna status B2B
         if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) {
             statusClass = "status-pending";
         }
@@ -177,7 +123,7 @@ function renderTableB2B(data) {
     });
 }
 
-// --- OPEN MODAL & UTILS (TIDAK BERUBAH) ---
+// --- OPEN MODAL B2C ---
 function openEditModalB2C(id) {
     const data = globalB2CData.find(item => item.id === id);
     if (!data) return;
@@ -195,6 +141,7 @@ function openEditModalB2C(id) {
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
+// --- OPEN MODAL B2B ---
 function openEditModalB2B(id) {
     const data = globalB2BData.find(item => item.id === id);
     if (!data) return;
@@ -215,6 +162,7 @@ function openEditModalB2B(id) {
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
+// --- UTILS & HANDLERS ---
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -307,6 +255,42 @@ function switchTab(type) {
     }
 }
 
+function calculateSummary(b2cData, b2bData) {
+    const allOrders = [...b2cData, ...b2bData];
+    const activeCount = allOrders.filter(o => 
+        o.status !== "Selesai" && 
+        o.status !== "Dibatalkan" &&
+        o.status !== "Proposal Ditolak"
+    ).length;
+
+    const cancelledCount = allOrders.filter(o => 
+        o.status === "Dibatalkan" || 
+        o.status === "Proposal Ditolak"
+    ).length;
+
+    const delayedCount = allOrders.filter(o => 
+        o.status === "Menunggu Konfirmasi" || 
+        o.status === "Menunggu Penjemputan"
+    ).length;
+    
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7);
+    const completedCount = allOrders.filter(o => {
+        if (o.status !== "Selesai") return false;
+        try {
+            const [day, month, year] = o.timestamp.split(',')[0].split('/'); 
+            const orderDate = new Date(`${year}-${month}-${day}`);
+            return orderDate >= oneWeekAgo;
+        } catch (e) { return false; }
+    }).length;
+
+    document.getElementById('valActive').innerText = activeCount;
+    document.getElementById('valCompleted').innerText = completedCount;
+    document.getElementById('valDelayed').innerText = delayedCount;
+    document.getElementById('valCancelled').innerText = cancelledCount;
+}
+
 function renderCardB2C(order) {
     const container = document.getElementById('newOrderCardContainer');
     const packageDetails = {
@@ -355,11 +339,24 @@ function renderCardB2B(order) {
     `;
 }
 
+// --- UPDATE LOGIC KONFIRMASI (B2C vs B2B) ---
 function confirmOrder(id, type) {
-    if(!confirm("Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.")) return;
+    let newStatus = "Menunggu Penjemputan"; // Default B2C
+    let confirmMsg = "Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.";
+
+    // Jika B2B, ubah status ke 'Sedang Ditinjau'
+    if (type === 'B2B') {
+        newStatus = "Sedang Ditinjau";
+        confirmMsg = "Konfirmasi proposal ini? Status akan diubah menjadi 'Sedang Ditinjau'.";
+    }
+
+    if(!confirm(confirmMsg)) return;
+    
     const btn = document.querySelector('.btn-confirm');
     if(btn) { btn.innerText = "Memproses..."; btn.disabled = true; }
-    fetch(`${APPS_SCRIPT_URL}?action=updateStatus&id=${id}&type=${type}&status=Menunggu Penjemputan`)
+    
+    // Pastikan pakai encodeURIComponent untuk menangani spasi di URL
+    fetch(`${APPS_SCRIPT_URL}?action=updateStatus&id=${id}&type=${type}&status=${encodeURIComponent(newStatus)}`)
     .then(res => res.json())
     .then(data => {
         if(data.result === "success") { fetchAllData(); }

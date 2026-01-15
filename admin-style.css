@@ -195,24 +195,65 @@ body {
 
 .order-card {
     border-radius: 20px;
-    color: white;
+    color: white; 
     padding: 25px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     overflow: hidden;
+    font-family: var(--font-opensans);
 }
 
-/* B2C THEME (Blue Gradient) */
+/* =========================== */
+/* B2C THEME (WARNA BARU)      */
+/* =========================== */
 .card-b2c {
-    background: linear-gradient(180deg, #4CC9F0 0%, #4361EE 100%);
+    /* Gradient Cyan ke Biru */
+    background: linear-gradient(to bottom right, #3DF2BF 0%, #3071F2 100%);
 }
 
-/* B2B THEME (Dark Teal Gradient) */
+/* Judul & Teks B2C */
+.card-b2c .card-title { color: #003366; font-weight: 800; }
+.card-b2c .customer-name { color: #4361EE; font-weight: 700; }
+.card-b2c .chat-btn { background-color: #20B49C; border: none; color: white; }
+
+/* Warna Kotak Info B2C */
+.b2c-box-blue { background-color: #1E96FC; color: white; }
+.b2c-box-light { background-color: #CFE8F3; color: #023E8A; }
+
+/* Tombol Konfirmasi B2C (Specifik Kartu) */
+.card-b2c .btn-confirm { 
+    background-color: #3A86FF; 
+    box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+}
+
+/* =========================== */
+/* B2B THEME (WARNA BARU)      */
+/* =========================== */
 .card-b2b {
-    background: linear-gradient(180deg, #00B4D8 0%, #03045E 100%); /* Adjusted to look dark teal */
+    /* Gradient Teal ke Gelap */
+    background: linear-gradient(to bottom right, #00B4D8 0%, #000000 100%);
 }
 
-/* Card Header */
+/* Judul & Teks B2B */
+.card-b2b .card-title { color: #003366; font-weight: 800; }
+.card-b2b .customer-name { color: #3DF2BF; font-weight: 700; }
+
+/* Warna Kotak Info B2B */
+.b2b-box-green { background-color: #3DF2BF; color: white; }
+.b2b-box-grey { background-color: rgba(108, 117, 125, 0.7); color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+/* Tombol Konfirmasi B2B (Specifik Kartu) */
+.card-b2b .btn-confirm { 
+    background-color: #3DF2BF; 
+    color: white;
+    box-shadow: 0 5px 15px rgba(46, 196, 182, 0.3);
+}
+
+/* =========================== */
+/* LAYOUT SEPERTI SEMULA       */
+/* =========================== */
+
+/* Header */
 .card-header {
     display: flex;
     align-items: center;
@@ -222,43 +263,44 @@ body {
 .card-icon-circle {
     width: 50px; height: 50px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
     display: flex; align-items: center; justify-content: center;
     font-size: 24px;
+    color: #003049;
 }
 .card-title {
     font-family: var(--font-poppins);
-    font-weight: 700; /* Bold */
+    font-weight: 700;
     font-size: 18px;
     flex: 1;
 }
 .badge-new {
-    background-color: #FF5A82; /* Pinkish Red */
+    background-color: #FF5A82;
     padding: 5px 15px;
     border-radius: 20px;
     font-family: var(--font-poppins);
-    font-weight: 500; /* Medium */
+    font-weight: 500;
     font-size: 12px;
+    color: white;
 }
 
-/* Card Body */
+/* Customer Name */
 .customer-name {
     font-family: var(--font-poppins);
-    font-weight: 600; /* SemiBold */
+    font-weight: 600;
     font-size: 20px;
     margin-bottom: 5px;
     display: flex; justify-content: space-between; align-items: center;
 }
 .chat-btn {
-    border: 1px solid white;
-    background: transparent;
-    color: white;
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 12px;
     text-decoration: none;
     display: flex; align-items: center; gap: 5px;
 }
+
+/* Info Row */
 .card-info-row {
     font-family: var(--font-opensans);
     font-size: 13px;
@@ -267,12 +309,12 @@ body {
 }
 .timestamp-text {
     font-family: var(--font-poppins);
-    font-weight: 700; /* Bold */
+    font-weight: 700;
     margin-bottom: 15px;
     display: block;
 }
 
-/* B2C List Style */
+/* Feature List */
 .b2c-features {
     font-family: var(--font-opensans);
     font-style: italic;
@@ -281,11 +323,11 @@ body {
     margin-bottom: 20px;
     border-left: 2px solid white;
     padding-left: 15px;
-    list-style: none; /* Hilangkan bullet default */
+    list-style: none;
 }
-.b2c-features li { margin-bottom: 5px; }
+.b2c-features li { margin-bottom: 5px; color: #111; font-weight: 500; }
 
-/* B2B Message Style */
+/* Message B2B */
 .b2b-message {
     font-family: var(--font-opensans);
     font-style: italic;
@@ -294,6 +336,7 @@ body {
     padding-left: 15px;
     margin-bottom: 20px;
     line-height: 1.5;
+    color: #3DF2BF;
 }
 
 /* Bottom Labels */
@@ -304,11 +347,11 @@ body {
 }
 .label-text {
     font-family: var(--font-poppins);
-    font-weight: 500; /* Medium */
+    font-weight: 500;
     font-size: 14px;
 }
 
-/* Values Boxes */
+/* Values Container */
 .values-container {
     display: flex;
     gap: 15px;
@@ -322,15 +365,8 @@ body {
     font-family: var(--font-poppins);
     font-size: 14px;
 }
-/* B2C Box Colors */
-.b2c-box-blue { background: #1E96FC; }
-.b2c-box-light { background: #CFE8F3; color: #023e8a; }
 
-/* B2B Box Colors */
-.b2b-box-green { background: #2EC4B6; }
-.b2b-box-grey { background: rgba(255,255,255,0.3); }
-
-/* Confirm Button */
+/* Confirm Button (BASE STYLE) */
 .btn-confirm {
     width: 100%;
     padding: 12px;
@@ -341,45 +377,105 @@ body {
     font-size: 16px;
     color: white;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.btn-blue { background-color: #4361EE; }
-.btn-teal { background-color: #2EC4B6; }
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .dashboard-split { grid-template-columns: 1fr; }
-    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    transition: transform 0.2s, filter 0.2s;
 }
 
-/* --- EMPTY STATE CARD (DESIGN SESUAI GAMBAR) --- */
+.btn-confirm:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+/* --- PERBAIKAN: STYLE UNTUK TOMBOL DI FORM MODAL --- */
+/* Ini memastikan tombol "Simpan Perubahan" tetap berwarna */
+
+.btn-blue {
+    background-color: #3A86FF !important; /* Warna B2C baru */
+    box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+}
+
+.btn-teal {
+    background-color: #3DF2BF !important; /* Warna B2B baru */
+    box-shadow: 0 5px 15px rgba(46, 196, 182, 0.3);
+    color: white !important;
+}
+
+/* --- EMPTY STATE CARD --- */
 .card-empty {
-    /* Teknik Hard Stop Gradient: */
-    /* 0% - 20% warnanya Silver kebiruan */
-    /* 20% - 100% warnanya Gradasi Hitam Abu */
     background: linear-gradient(
-        180deg, 
-        #B0C4DE 0%, 
-        #B0C4DE 20%, 
-        #4a4a4a 20%, 
-        #1a1a1a 100%
+        to bottom right, 
+        #EBEBEA 0%, 
+        #000000 100%
     );
-    
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: 450px; /* Pastikan tinggi kartu konsisten */
+    min-height: 450px;
     height: 100%;
 }
 
 .empty-text {
     font-family: var(--font-poppins);
-    font-weight: 700; /* Bold */
+    font-weight: 700;
     font-size: 24px;
     color: white;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* --- COLORS FOR PACKAGE BADGES (NEW) --- */
+
+/* 1. Standard (Default) - Putih Kebiruan */
+.pkg-standard {
+    background-color: #CFE8F3;
+    color: #023E8A;
+    font-weight: 600;
+}
+
+/* 2. Express - Kuning/Oranye Cerah */
+.pkg-express {
+    background-color: #FFD166; /* Pastel Yellow/Orange */
+    color: #5D4037; /* Coklat tua agar terbaca */
+    font-weight: 700;
+}
+
+/* 3. Premium - Merah Muda / Ungu */
+.pkg-premium {
+    background-color: #EF476F; /* Pinkish Red */
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(239, 71, 111, 0.3);
+}
+
+/* 4. Silver - Abu-abu Metalik */
+.pkg-silver {
+    background-color: #E9ECEF; /* Light Grey */
+    color: #495057; /* Dark Grey Text */
+    font-weight: 600;
+    border: 1px solid #CED4DA;
+}
+
+/* 5. Gold - Emas Mewah */
+.pkg-gold {
+    background: linear-gradient(135deg, #FFD700, #FDB931); /* Gradient Gold */
+    color: #5D4037;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* 6. Platinum - Biru Cyan/Putih Bersinar */
+.pkg-platinum {
+    background: linear-gradient(135deg, #E0F7FA, #B2EBF2); /* Icy Blue */
+    color: #006064; /* Deep Cyan */
+    font-weight: 700;
+    border: 1px solid #80DEEA;
+    box-shadow: 0 4px 10px rgba(128, 222, 234, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-split { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* --- MODAL EDIT STYLING --- */

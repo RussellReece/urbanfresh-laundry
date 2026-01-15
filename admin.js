@@ -22,41 +22,29 @@ function fetchAllData() {
         renderTableB2B(data.b2b);
         calculateSummary(data.b2c, data.b2b);
 
-        // === LOGIKA BARU: ANTRIAN GABUNGAN ===
-        
-        // 1. Ambil yang Pending dari B2C & tandai tipenya
+        // === LOGIKA ANTRIAN GABUNGAN ===
         const pendingB2C = data.b2c
             .filter(o => o.status === "Menunggu Konfirmasi")
-            .map(o => ({...o, type: 'B2C'})); // Tambah label tipe
+            .map(o => ({...o, type: 'B2C'}));
 
-        // 2. Ambil yang Pending dari B2B & tandai tipenya
         const pendingB2B = data.b2b
             .filter(o => o.status === "Menunggu Konfirmasi")
-            .map(o => ({...o, type: 'B2B'})); // Tambah label tipe
+            .map(o => ({...o, type: 'B2B'}));
 
-        // 3. Gabungkan kedua array
         const allPending = [...pendingB2C, ...pendingB2B];
 
-        // 4. Urutkan berdasarkan ID (Timestamp)
-        // ID formatnya "CO-123456" atau "CORP-123456". Angka di belakang adalah timestamp.
-        // Kita urutkan Ascending (A-B) agar yang "Terdahulu" (Angka kecil) muncul duluan.
+        // Urutkan berdasarkan Waktu (ID timestamp)
         allPending.sort((a, b) => {
             const timeA = parseInt(a.id.split('-')[1]);
             const timeB = parseInt(b.id.split('-')[1]);
-            return timeA - timeB; // Kecil ke Besar (Oldest First)
+            return timeA - timeB; 
         });
 
-        // 5. Tampilkan urutan pertama
         if (allPending.length > 0) {
-            const priorityOrder = allPending[0]; // Ambil antrian terdepan
-            
-            if (priorityOrder.type === 'B2C') {
-                renderCardB2C(priorityOrder);
-            } else {
-                renderCardB2B(priorityOrder);
-            }
+            const priorityOrder = allPending[0]; 
+            if (priorityOrder.type === 'B2C') renderCardB2C(priorityOrder);
+            else renderCardB2B(priorityOrder);
         } else {
-            // Jika tidak ada antrian sama sekali
             document.getElementById('newOrderCardContainer').innerHTML = `
                 <div class="order-card card-empty">
                     <div class="empty-text">Tidak ada pesanan<br>baru yang perlu<br>dikonfirmasi</div>
@@ -66,99 +54,179 @@ function fetchAllData() {
     .catch(err => console.error("Error fetching data:", err));
 }
 
-// --- RENDER TABLE B2C ---
+// ==========================================
+// HELPER: WARNA PAKET DINAMIS
+// ==========================================
+function getPackageClass(pkgName) {
+    if (!pkgName) return "pkg-standard"; // Default
+    const p = pkgName.toLowerCase();
+
+    // B2C Packages
+    if (p.includes("express")) return "pkg-express";
+    if (p.includes("premium")) return "pkg-premium";
+    
+    // B2B Packages
+    if (p.includes("gold")) return "pkg-gold";
+    if (p.includes("platinum")) return "pkg-platinum";
+    if (p.includes("silver")) return "pkg-silver";
+
+    return "pkg-standard"; // Default (Standard)
+}
+
+// --- RENDER CARD B2C (UPDATED) ---
+function renderCardB2C(order) {
+    const container = document.getElementById('newOrderCardContainer');
+    // Ambil kelas warna berdasarkan nama paket
+    const packageClass = getPackageClass(order.package);
+
+    // Fitur List
+    const packageDetails = {
+        "Standard": ["Layanan Dasar", "Deterjen Standar", "Estimasi 3 Hari"],
+        "Express": ["Layanan Prioritas", "Deterjen Premium", "Estimasi 1 Hari"],
+        "Premium": ["Perawatan Khusus", "Deterjen Eco-Friendly", "Estimasi 6 Jam"]
+    };
+    const currentFeatures = packageDetails[order.package] || packageDetails["Standard"];
+    const featuresHTML = currentFeatures.map(item => `<li>${item}</li>`).join("");
+
+    container.innerHTML = `
+        <div class="order-card card-b2c">
+            <div class="card-header">
+                <div class="card-icon-circle"><i class="fa-solid fa-sparkles"></i></div>
+                <div class="card-title">UrbanFresh ${order.service}</div>
+                <span class="badge-new">New</span>
+            </div>
+            <div class="customer-name">${order.name}<a href="https://wa.me/${order.phone}" target="_blank" class="chat-btn"><i class="fa-brands fa-whatsapp"></i> Chat Customer</a></div>
+            <div class="card-info-row"><i class="fa-solid fa-location-dot"></i><span>${order.address}</span></div>
+            <span class="timestamp-text"><i class="fa-regular fa-clock"></i> ${order.timestamp}</span>
+            <ul class="b2c-features">${featuresHTML}</ul>
+            <div class="bottom-labels"><span class="label-text">Jenis Layanan :</span><span class="label-text">Paket :</span></div>
+            
+            <div class="values-container">
+                <div class="value-box b2c-box-blue">${order.service}</div>
+                <div class="value-box ${packageClass}">${order.package}</div>
+            </div>
+            
+            <button class="btn-confirm btn-blue" onclick="confirmOrder('${order.id}', 'B2C')">Konfirmasi</button>
+        </div>
+    `;
+}
+
+// --- RENDER CARD B2B (UPDATED) ---
+function renderCardB2B(order) {
+    const container = document.getElementById('newOrderCardContainer');
+    // Ambil kelas warna berdasarkan nama paket
+    const packageClass = getPackageClass(order.package);
+
+    container.innerHTML = `
+        <div class="order-card card-b2b">
+            <div class="card-header">
+                <div class="card-icon-circle"><i class="fa-solid fa-building"></i></div>
+                <div class="card-title">UrbanFresh Corporate</div>
+                <span class="badge-new">New</span>
+            </div>
+            <div class="customer-name" style="font-size:18px;">${order.company}<span style="font-size:14px; font-weight:400;">PIC : ${order.pic}</span></div>
+            <div class="card-info-row"><i class="fa-solid fa-location-dot"></i><span>${order.address}</span></div>
+            <span class="timestamp-text"><i class="fa-regular fa-clock"></i> ${order.timestamp}</span>
+            <p class="b2b-message">"${order.message}"</p>
+            <div class="bottom-labels"><span class="label-text">Estimate Weight :</span><span class="label-text">Paket :</span></div>
+            
+            <div class="values-container">
+                <div class="value-box b2b-box-green">${order.weight}</div>
+                <div class="value-box ${packageClass}">${order.package}</div>
+            </div>
+            
+            <button class="btn-confirm btn-teal" onclick="confirmOrder('${order.id}', 'B2B')">Konfirmasi</button>
+        </div>
+    `;
+}
+
+// --- FUNGSI CONFIRM & LAINNYA (TETAP) ---
+function confirmOrder(id, type) {
+    let newStatus = "Menunggu Penjemputan"; 
+    let confirmMsg = "Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.";
+
+    if (type === 'B2B') {
+        newStatus = "Sedang Ditinjau";
+        confirmMsg = "Konfirmasi proposal ini? Status akan diubah menjadi 'Sedang Ditinjau'.";
+    }
+
+    if(!confirm(confirmMsg)) return;
+    
+    const btn = document.querySelector('.btn-confirm');
+    if(btn) { btn.innerText = "Memproses..."; btn.disabled = true; }
+    
+    fetch(`${APPS_SCRIPT_URL}?action=updateStatus&id=${id}&type=${type}&status=${encodeURIComponent(newStatus)}`)
+    .then(res => res.json())
+    .then(data => {
+        if(data.result === "success") { fetchAllData(); }
+        else { alert("Gagal update status."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } }
+    })
+    .catch(err => { alert("Gagal koneksi server."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } });
+}
+
+// --- SISA FUNGSI (Render Table, Modal, Delete, Summary) ---
+// (Dicopy sama persis agar file tidak terpotong)
+
 function renderTableB2C(data) {
     const tbody = document.getElementById('tbodyB2C');
     tbody.innerHTML = "";
-    
     data.forEach(item => {
         let statusClass = "status-selesai"; 
         const s = item.status.toLowerCase();
-        if(s.includes("menunggu") || s.includes("proses") || s.includes("sedang") || s.includes("siap") || s.includes("kurir")) {
-            statusClass = "status-pending";
-        }
+        if(s.includes("menunggu") || s.includes("proses") || s.includes("sedang") || s.includes("siap") || s.includes("kurir")) statusClass = "status-pending";
         if(s.includes("batal")) statusClass = "status-batal";
-        
         const linkUrl = (item.locationLink && item.locationLink !== "-") ? item.locationLink : "#";
         const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
         const addressText = item.address || "No Address";
-
-        const row = `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.phone}</td>
-                <td><span style="background:#eee; padding:2px 8px; border-radius:4px;">${item.service}</span></td>
-                <td><span style="background:#e0f7fa; color:#006064; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
-                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-                <td>${item.timestamp}</td>
-                <td>
-                    <a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">
-                        ${addressText}
-                    </a>
-                </td>
-                <td>
-                    <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button>
-                    <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">Delete</button>
-                </td>
-            </tr>
-        `;
+        const row = `<tr><td>${item.name}</td><td>${item.phone}</td><td><span style="background:#eee; padding:2px 8px; border-radius:4px;">${item.service}</span></td><td><span style="background:#e0f7fa; color:#006064; padding:2px 8px; border-radius:4px;">${item.package}</span></td><td><span class="status-badge ${statusClass}">${item.status}</span></td><td>${item.timestamp}</td><td><a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a></td><td><button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button><button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">Delete</button></td></tr>`;
         tbody.innerHTML += row;
     });
 }
 
-// --- RENDER TABLE B2B ---
 function renderTableB2B(data) {
     const tbody = document.getElementById('tbodyB2B');
     tbody.innerHTML = "";
-    
     data.forEach(item => {
         let statusClass = "status-selesai";
         const s = item.status.toLowerCase();
-        
-        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) {
-            statusClass = "status-pending";
-        }
-        if(s.includes("batal") || s.includes("tolak")) {
-            statusClass = "status-batal";
-        }
-
+        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) statusClass = "status-pending";
+        if(s.includes("batal") || s.includes("tolak")) statusClass = "status-batal";
         const addressText = item.address || "No Address";
         const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
         const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
-
-        const row = `
-            <tr>
-                <td>${item.company}</td>
-                <td>${item.pic}</td>
-                <td>${item.email}</td>
-                <td>${item.phone}</td>
-                <td>${item.industry}</td>
-                <td>${item.weight}</td>
-                <td><span style="background:#495057; color:white; padding:2px 8px; border-radius:4px;">${item.package}</span></td>
-                
-                <td>
-                    <a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">
-                        ${addressText}
-                    </a>
-                </td>
-
-                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-                <td>${item.timestamp}</td>
-                <td>
-                    <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button>
-                    <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">Delete</button>
-                </td>
-            </tr>
-        `;
+        const row = `<tr><td>${item.company}</td><td>${item.pic}</td><td>${item.email}</td><td>${item.phone}</td><td>${item.industry}</td><td>${item.weight}</td><td><span style="background:#495057; color:white; padding:2px 8px; border-radius:4px;">${item.package}</span></td><td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td><td><span class="status-badge ${statusClass}">${item.status}</span></td><td>${item.timestamp}</td><td><button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button><button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">Delete</button></td></tr>`;
         tbody.innerHTML += row;
     });
 }
 
-// --- OPEN MODAL B2C ---
+function calculateSummary(b2cData, b2bData) {
+    const allOrders = [...b2cData, ...b2bData];
+    const activeCount = allOrders.filter(o => o.status !== "Selesai" && o.status !== "Dibatalkan" && o.status !== "Proposal Ditolak").length;
+    const cancelledCount = allOrders.filter(o => o.status === "Dibatalkan" || o.status === "Proposal Ditolak").length;
+    const delayedCount = allOrders.filter(o => o.status === "Menunggu Konfirmasi" || o.status === "Menunggu Penjemputan" || o.status === "Sedang Ditinjau").length;
+    const now = new Date();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(now.getDate() - 7); 
+    const completedThisWeek = allOrders.filter(o => {
+        if (o.status !== "Selesai") return false;
+        try {
+            const datePart = o.timestamp.split(',')[0]; 
+            const [day, month, year] = datePart.split('/'); 
+            const orderDate = new Date(`${year}-${month}-${day}`); 
+            return orderDate >= oneWeekAgo;
+        } catch (e) { return false; }
+    }).length;
+    const totalB2CCompleted = b2cData.filter(o => o.status === "Selesai").length;
+    document.getElementById('valActive').innerText = activeCount;
+    document.getElementById('valCompleted').innerText = completedThisWeek; 
+    document.getElementById('descCompleted').innerText = `Total Pekerjaan Selesai : ${totalB2CCompleted} pekerjaan`;
+    document.getElementById('valDelayed').innerText = delayedCount;
+    document.getElementById('valCancelled').innerText = cancelledCount;
+}
+
 function openEditModalB2C(id) {
     const data = globalB2CData.find(item => item.id === id);
     if (!data) return;
-    
     document.getElementById('editB2C_id_display').value = data.id || "";
     document.getElementById('editB2C_timestamp').value = data.timestamp || "";
     document.getElementById('editB2C_name').value = data.name;
@@ -168,15 +236,12 @@ function openEditModalB2C(id) {
     document.getElementById('editB2C_service').value = data.service;
     document.getElementById('editB2C_package').value = data.package;
     document.getElementById('editB2C_status').value = data.status;
-
     document.getElementById('modalEditB2C').style.display = 'flex';
 }
 
-// --- OPEN MODAL B2B ---
 function openEditModalB2B(id) {
     const data = globalB2BData.find(item => item.id === id);
     if (!data) return;
-
     document.getElementById('editB2B_id_display').value = data.id || "";
     document.getElementById('editB2B_timestamp').value = data.timestamp || "";
     document.getElementById('editB2B_company').value = data.company;
@@ -189,11 +254,9 @@ function openEditModalB2B(id) {
     document.getElementById('editB2B_package').value = data.package;
     document.getElementById('editB2B_status').value = data.status;
     document.getElementById('editB2B_message').value = data.message;
-
     document.getElementById('modalEditB2B').style.display = 'flex';
 }
 
-// --- UTILS & HANDLERS ---
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -203,7 +266,6 @@ function handleUpdateB2C(e) {
     const btn = e.target.querySelector('button');
     const originalText = btn.innerText;
     btn.innerText = "Menyimpan..."; btn.disabled = true;
-
     const payload = {
         type: "B2C",
         id: document.getElementById('editB2C_id_display').value,
@@ -223,7 +285,6 @@ function handleUpdateB2B(e) {
     const btn = e.target.querySelector('button');
     const originalText = btn.innerText;
     btn.innerText = "Menyimpan..."; btn.disabled = true;
-
     const payload = {
         type: "B2B",
         id: document.getElementById('editB2B_id_display').value,
@@ -284,126 +345,4 @@ function switchTab(type) {
         document.getElementById('tableB2C').style.display = 'none';
         document.getElementById('tableB2B').style.display = 'table';
     }
-}
-
-function calculateSummary(b2cData, b2bData) {
-    const allOrders = [...b2cData, ...b2bData];
-    
-    // 1. Total Pekerjaan Aktif
-    const activeCount = allOrders.filter(o => 
-        o.status !== "Selesai" && 
-        o.status !== "Dibatalkan" &&
-        o.status !== "Proposal Ditolak"
-    ).length;
-
-    // 2. Pesanan Dibatalkan / Proposal Ditolak
-    const cancelledCount = allOrders.filter(o => 
-        o.status === "Dibatalkan" || 
-        o.status === "Proposal Ditolak"
-    ).length;
-
-    // 3. Permintaan Jadwal Tertunda (Pending + Review)
-    const delayedCount = allOrders.filter(o => 
-        o.status === "Menunggu Konfirmasi" || 
-        o.status === "Menunggu Penjemputan" ||
-        o.status === "Sedang Ditinjau"
-    ).length;
-
-    // 4. Pekerjaan Selesai Minggu Ini (Untuk Angka Besar H2)
-    const now = new Date();
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7); 
-
-    const completedThisWeek = allOrders.filter(o => {
-        if (o.status !== "Selesai") return false;
-        try {
-            const datePart = o.timestamp.split(',')[0]; 
-            const [day, month, year] = datePart.split('/'); 
-            const orderDate = new Date(`${year}-${month}-${day}`); 
-            return orderDate >= oneWeekAgo;
-        } catch (e) { return false; }
-    }).length;
-
-    // 5. Total Selesai B2C (Untuk Teks Kecil di Bawah)
-    const totalB2CCompleted = b2cData.filter(o => o.status === "Selesai").length;
-
-    // --- UPDATE DOM ---
-    document.getElementById('valActive').innerText = activeCount;
-    
-    document.getElementById('valCompleted').innerText = completedThisWeek; 
-    document.getElementById('descCompleted').innerText = `Total Pekerjaan Selesai : ${totalB2CCompleted} pekerjaan`;
-
-    document.getElementById('valDelayed').innerText = delayedCount;
-    document.getElementById('valCancelled').innerText = cancelledCount;
-}
-
-function renderCardB2C(order) {
-    const container = document.getElementById('newOrderCardContainer');
-    const packageDetails = {
-        "Standard": ["Layanan Dasar", "Deterjen Standar", "Estimasi 3 Hari"],
-        "Express": ["Layanan Prioritas", "Deterjen Premium", "Estimasi 1 Hari"],
-        "Premium": ["Perawatan Khusus", "Deterjen Eco-Friendly", "Estimasi 6 Jam"]
-    };
-    const currentFeatures = packageDetails[order.package] || packageDetails["Standard"];
-    const featuresHTML = currentFeatures.map(item => `<li>${item}</li>`).join("");
-
-    container.innerHTML = `
-        <div class="order-card card-b2c">
-            <div class="card-header">
-                <div class="card-icon-circle"><i class="fa-solid fa-sparkles"></i></div>
-                <div class="card-title">UrbanFresh ${order.service}</div>
-                <span class="badge-new">New</span>
-            </div>
-            <div class="customer-name">${order.name}<a href="https://wa.me/${order.phone}" target="_blank" class="chat-btn"><i class="fa-brands fa-whatsapp"></i> Chat Customer</a></div>
-            <div class="card-info-row"><i class="fa-solid fa-location-dot"></i><span>${order.address}</span></div>
-            <span class="timestamp-text"><i class="fa-regular fa-clock"></i> ${order.timestamp}</span>
-            <ul class="b2c-features">${featuresHTML}</ul>
-            <div class="bottom-labels"><span class="label-text">Jenis Layanan :</span><span class="label-text">Paket :</span></div>
-            <div class="values-container"><div class="value-box b2c-box-blue">${order.service}</div><div class="value-box b2c-box-light">${order.package}</div></div>
-            <button class="btn-confirm btn-blue" onclick="confirmOrder('${order.id}', 'B2C')">Konfirmasi</button>
-        </div>
-    `;
-}
-
-function renderCardB2B(order) {
-    const container = document.getElementById('newOrderCardContainer');
-    container.innerHTML = `
-        <div class="order-card card-b2b">
-            <div class="card-header">
-                <div class="card-icon-circle"><i class="fa-solid fa-building"></i></div>
-                <div class="card-title">UrbanFresh Corporate</div>
-                <span class="badge-new">New</span>
-            </div>
-            <div class="customer-name" style="font-size:18px;">${order.company}<span style="font-size:14px; font-weight:400;">PIC : ${order.pic}</span></div>
-            <div class="card-info-row"><i class="fa-solid fa-location-dot"></i><span>${order.address}</span></div>
-            <span class="timestamp-text"><i class="fa-regular fa-clock"></i> ${order.timestamp}</span>
-            <p class="b2b-message">"${order.message}"</p>
-            <div class="bottom-labels"><span class="label-text">Estimate Weight :</span><span class="label-text">Paket :</span></div>
-            <div class="values-container"><div class="value-box b2b-box-green">${order.weight}</div><div class="value-box b2b-box-grey">${order.package}</div></div>
-            <button class="btn-confirm btn-teal" onclick="confirmOrder('${order.id}', 'B2B')">Konfirmasi</button>
-        </div>
-    `;
-}
-
-function confirmOrder(id, type) {
-    let newStatus = "Menunggu Penjemputan"; 
-    let confirmMsg = "Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.";
-
-    if (type === 'B2B') {
-        newStatus = "Sedang Ditinjau";
-        confirmMsg = "Konfirmasi proposal ini? Status akan diubah menjadi 'Sedang Ditinjau'.";
-    }
-
-    if(!confirm(confirmMsg)) return;
-    
-    const btn = document.querySelector('.btn-confirm');
-    if(btn) { btn.innerText = "Memproses..."; btn.disabled = true; }
-    
-    fetch(`${APPS_SCRIPT_URL}?action=updateStatus&id=${id}&type=${type}&status=${encodeURIComponent(newStatus)}`)
-    .then(res => res.json())
-    .then(data => {
-        if(data.result === "success") { fetchAllData(); }
-        else { alert("Gagal update status."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } }
-    })
-    .catch(err => { alert("Gagal koneksi server."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } });
 }

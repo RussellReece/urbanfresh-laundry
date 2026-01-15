@@ -335,14 +335,32 @@ function deleteOrder(id, type) {
     .catch(err => alert("Error koneksi."));
 }
 
+// --- FUNGSI GANTI TAB (DENGAN TRANSISI WARNA) ---
 function switchTab(type) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    // 1. Atur Tombol Aktif
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => {
+        // Hapus active dari semua, lalu tambahkan ke yang diklik
+        if (btn.textContent.includes(type)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // 2. Ganti Tampilan Tabel
     if (type === 'B2C') {
         document.getElementById('tableB2C').style.display = 'table';
         document.getElementById('tableB2B').style.display = 'none';
+        
+        // Hapus mode B2B (Kembali ke Biru B2C)
+        document.querySelector('.table-tabs').classList.remove('b2b-mode');
+        
     } else {
         document.getElementById('tableB2C').style.display = 'none';
         document.getElementById('tableB2B').style.display = 'table';
+        
+        // Tambah mode B2B (Berubah jadi Gelap/Teal)
+        document.querySelector('.table-tabs').classList.add('b2b-mode');
     }
 }

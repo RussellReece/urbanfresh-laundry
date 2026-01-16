@@ -199,6 +199,85 @@ body {
 .status-pending { background-color: #ffc107; color: #333; }
 .location-link { color: #333; text-decoration: underline; }
 
+/* --- TABLE BADGE STYLING (FIX LAYOUT) --- */
+
+/* Reset style untuk semua cell tabel agar rapi */
+.custom-table td {
+    vertical-align: middle; /* Pastikan konten vertikal tengah */
+}
+
+/* Badge Container Umum (Untuk Service, Package, Status) */
+.custom-table span {
+    display: inline-block; /* PENTING: Agar padding & margin berfungsi */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap; /* Mencegah teks turun baris (misal: Wash & Fold) */
+}
+
+/* 1. KOLOM SERVICE (Abu-abu) */
+/* Kita targetkan span di kolom ke-3 (Service) pada tabel B2C */
+#tbodyB2C tr td:nth-child(3) span {
+    background-color: #F1F3F5; /* Abu-abu terang */
+    color: #495057; /* Abu-abu gelap */
+    border: 1px solid #DEE2E6;
+}
+
+/* 2. KOLOM PACKAGE (Biru Muda / Sesuai Paket) */
+/* Kita targetkan span di kolom ke-4 (Package) pada tabel B2C */
+#tbodyB2C tr td:nth-child(4) span {
+    /* Style default, nanti ditimpa oleh class pkg-express dll */
+    background-color: #E3F2FD; 
+    color: #0D47A1;
+}
+
+/* Paket B2B (Kolom ke-7) */
+#tbodyB2B tr td:nth-child(7) span {
+    background-color: #E0F2F1;
+    color: #00695C;
+}
+
+/* 3. KOLOM STATUS (Warna-warni) */
+.status-badge {
+    /* Pastikan badge status punya min-width agar seragam */
+    min-width: 100px; 
+}
+
+/* Warna Status Spesifik */
+.status-selesai { 
+    background-color: #D1E7DD; 
+    color: #0F5132; /* Hijau Teks */
+    border: 1px solid #BADBCC;
+}
+
+.status-pending { 
+    background-color: #FFF3CD; 
+    color: #856404; /* Kuning Gelap Teks */
+    border: 1px solid #FFECB5;
+}
+
+.status-batal { 
+    background-color: #F8D7DA; 
+    color: #721C24; /* Merah Teks */
+    border: 1px solid #F5C6CB;
+}
+
+/* Link Lokasi */
+.location-link {
+    color: #0096C7; /* Biru Primary */
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px dotted #0096C7;
+    transition: all 0.2s;
+}
+.location-link:hover {
+    color: #005f73;
+    border-bottom: 1px solid #005f73;
+}
+
 /* Action Buttons */
 .btn-action {
     padding: 5px 10px;

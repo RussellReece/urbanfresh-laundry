@@ -178,7 +178,37 @@ function renderTableB2C(data) {
         const linkUrl = (item.locationLink && item.locationLink !== "-") ? item.locationLink : "#";
         const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
         const addressText = item.address || "No Address";
-        const row = `<tr><td>${item.name}</td><td>${item.phone}</td><td><span style="background:#eee; padding:2px 8px; border-radius:4px;">${item.service}</span></td><td><span style="background:#e0f7fa; color:#006064; padding:2px 8px; border-radius:4px;">${item.package}</span></td><td><span class="status-badge ${statusClass}">${item.status}</span></td><td>${item.timestamp}</td><td><a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a></td><td><button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button><button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">Delete</button></td></tr>`;
+        const row = 
+        `<tr>
+            <td>${item.name}</td>
+            <td>${item.phone}</td>
+            <td>
+                <span 
+                style="background:#eee; 
+                padding:2px 8px; 
+                border-radius:4px;">${item.service}
+                </span>
+            </td>
+            <td>
+                <span 
+                style="background:#e0f7fa; 
+                color:#006064; 
+                padding:2px 8px; 
+                border-radius:4px;">${item.package}
+                </span>
+            </td>
+            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+            <td>${item.timestamp}</td>
+            <td>
+                <a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a>
+            </td>
+            <td>
+                <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button>
+                <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">
+                    <i class="fa-solid fa-trash"></i> 
+                </button>
+            </td>
+        </tr>`;
         tbody.innerHTML += row;
     });
 }
@@ -194,7 +224,31 @@ function renderTableB2B(data) {
         const addressText = item.address || "No Address";
         const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
         const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
-        const row = `<tr><td>${item.company}</td><td>${item.pic}</td><td>${item.email}</td><td>${item.phone}</td><td>${item.industry}</td><td>${item.weight}</td><td><span style="background:#495057; color:white; padding:2px 8px; border-radius:4px;">${item.package}</span></td><td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td><td><span class="status-badge ${statusClass}">${item.status}</span></td><td>${item.timestamp}</td><td><button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button><button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">Delete</button></td></tr>`;
+        const row = 
+        `<tr>
+            <td title="${item.company}">${item.company}</td>
+            <td title="${item.pic}">${item.pic}</td>
+            <td title="${item.email}">${item.email}</td>
+            <td title="${item.phone}">${item.phone}</td>
+            <td title="${item.industry}">${item.industry}</td>
+            <td title="${item.weight}">${item.weight}</td>
+            <td>
+                <span 
+                style="background:#495057; 
+                color:white; 
+                padding:2px 8px; 
+                border-radius:4px;">${item.package}</span>
+            </td>
+            <td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td>
+            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+            <td>${item.timestamp}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button>
+                <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">
+                    <i class="fa-solid fa-trash"></i> 
+                </button>
+            </td>
+        </tr>`;
         tbody.innerHTML += row;
     });
 }

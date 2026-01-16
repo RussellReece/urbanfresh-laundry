@@ -291,6 +291,171 @@ body {
 .btn-edit { background-color: #198754; }
 .btn-delete { background-color: #dc3545; }
 
+/* ========================================= */
+/* --- TABLE OPTIMIZATION (RAPI & COMPACT) --- */
+/* ========================================= */
+
+/* --- TABLE WRAPPER & SCROLLING --- */
+.table-wrapper {
+    padding-left: 15px;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: white;
+    
+    /* 1. Atur Tinggi Maksimal (Sekitar 10 Baris) */
+    max-height: 500px; /* Sesuaikan angka ini jika ingin lebih/kurang dari 10 baris */
+    
+    /* 2. Aktifkan Scroll Vertikal */
+    overflow-y: auto; 
+    
+    /* Scroll Horizontal tetap aktif jika kolom banyak */
+    overflow-x: auto;
+
+    /* Custom Scrollbar yang cantik */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f5f5f5;
+}
+
+/* Style Scrollbar (Chrome/Safari/Edge) */
+.table-wrapper::-webkit-scrollbar {
+    width: 8px;  /* Lebar scroll vertikal */
+    height: 8px; /* Tinggi scroll horizontal */
+}
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #bbb;
+}
+
+/* --- STICKY HEADER (PENTING) --- */
+/* Agar Judul Kolom (Name, Phone, Service...) tetap terlihat saat di-scroll ke bawah */
+.custom-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Pastikan di atas isi tabel */
+    background-color: #f9fafb; /* Warna background header */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Bayangan kecil di bawah header */
+}
+
+/* Fix untuk Sticky Action Column saat Header Sticky juga aktif */
+/* Sudut kanan atas (Header Action) harus paling atas */
+.custom-table thead th:last-child {
+    z-index: 15; 
+}
+
+/* 2. PENGATURAN CELL UMUM */
+.custom-table th, 
+.custom-table td {
+    padding: 12px 15px; /* Padding lebih compact */
+    font-size: 13px;    /* Font sedikit lebih kecil agar muat */
+    white-space: nowrap; /* Mencegah teks turun baris sembarangan */
+    vertical-align: middle;
+}
+
+/* Header Tabel */
+.custom-table th {
+    background-color: #f9fafb; /* Warna header abu muda */
+    color: #4b5563;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px; /* Font header kecil tapi bold */
+    letter-spacing: 0.5px;
+}
+
+/* 3. BATASI LEBAR KOLOM PANJANG (Email & Alamat) */
+/* Teknik ini akan mengubah teks panjang menjadi "..." */
+
+/* Target Kolom Email (Hanya di tabel B2B) */
+#tableB2B td:nth-child(3) { 
+    max-width: 150px;      /* Batas lebar maksimal */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ubah sisa teks jadi ... */
+    white-space: nowrap;
+}
+
+/* Target Kolom Location/Address (Semua Tabel) */
+.location-link {
+    display: block;
+    max-width: 180px;      /* Batas lebar alamat */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom: none;   /* Hapus garis bawah agar lebih bersih */
+    color: #0096C7;
+}
+.location-link:hover {
+    text-decoration: underline;
+    overflow: visible;     /* Opsional: Tampilkan full saat hover (jika layout mengizinkan) */
+}
+
+/* Target Kolom ID/Name/Phone (Agar tidak terlalu lebar) */
+#tableB2B td:nth-child(1), /* Company */
+#tableB2B td:nth-child(2) { /* PIC */
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4. STICKY ACTION COLUMN (Tombol Menempel di Kanan) */
+/* Ini membuat kolom Action tetap terlihat walau tabel di-scroll ke kanan */
+
+/* Header Action */
+.custom-table th:last-child {
+    position: sticky;
+    right: 0;
+    background-color: #f9fafb; /* Samakan warna background header */
+    z-index: 5;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05); /* Bayangan pemisah */
+    text-align: center;
+}
+
+/* Body Action */
+.custom-table td:last-child {
+    position: sticky;
+    right: 0;
+    background-color: white; /* Wajib ada background agar tidak transparan */
+    z-index: 4;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05); /* Bayangan pemisah */
+    text-align: center;
+}
+
+/* 5. PERAPIHAN TOMBOL ACTION */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px; /* Tombol Kotak/Bulat kecil */
+    border-radius: 6px;
+    padding: 0;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+/* Kita sembunyikan teks "Edit"/"Delete", ganti dengan Icon agar hemat tempat */
+/* Pastikan di HTML nanti tombolnya pakai icon <i class="fa..."> */
+/* Jika Anda masih pakai teks, CSS ini akan membuatnya kotak saja */
+
+/* Jarak antar tombol */
+.btn-edit { margin-right: 5px; }
+
+/* Hover Effect Baris Tabel */
+.custom-table tbody tr:hover td {
+    background-color: #f8fcfd; /* Highlight baris saat mouse lewat */
+}
+/* Fix untuk Sticky Column saat hover row */
+.custom-table tbody tr:hover td:last-child {
+    background-color: #f8fcfd; 
+}
 
 /* --- ORDER CARD DESIGN (NEW ORDER) --- */
 #newOrderCardContainer {

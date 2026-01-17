@@ -163,12 +163,12 @@
                     <div class="form-group">
                         <label>Nomor WhatsApp</label>
                         <div class="input-wrapper">
-                        <i class="fa-brands fa-whatsapp input-icon"></i>
-                        <input type="text" id="editB2C_phone" required>
-        
-                        <button type="button" class="btn-wa-action" onclick="chatWA('editB2C_phone')" title="Chat ke Nomor ini">
-                            <i class="fa-regular fa-paper-plane"></i>
-                        </button>
+                            <i class="fa-brands fa-whatsapp input-icon"></i>
+                            <input type="text" id="editB2C_phone" required>
+                            <button type="button" class="btn-wa-inline" onclick="chatFromInput('editB2C_phone')">
+                                Chat <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -290,9 +290,8 @@
                         <div class="input-wrapper">
                             <i class="fa-solid fa-phone input-icon"></i>
                             <input type="text" id="editB2B_phone">
-
-                            <button type="button" class="btn-wa-action" onclick="chatWA('editB2B_phone')" title="Chat ke Nomor ini">
-                                <i class="fa-regular fa-paper-plane"></i>
+                            <button type="button" class="btn-wa-inline" onclick="chatFromInput('editB2B_phone')">
+                                Chat <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
                     </div>

@@ -510,26 +510,28 @@ function switchTab(type) {
     }
 }
 
-// --- FUNGSI KLIK TOMBOL CHAT WA DI FORM EDIT ---
-function chatWA(inputId) {
-    // 1. Ambil value dari input
-    let phone = document.getElementById(inputId).value;
+// --- FUNGSI CHAT WA DARI FORM EDIT ---
+function chatFromInput(inputId) {
+    const phoneInput = document.getElementById(inputId).value;
     
-    // 2. Validasi jika kosong
-    if (!phone) {
+    if (!phoneInput) {
         alert("Nomor telepon kosong!");
         return;
     }
 
-    // 3. Bersihkan karakter aneh (hapus spasi, strip, tanda kutip, huruf)
-    // Hanya sisakan angka
-    phone = phone.replace(/[^0-9]/g, '');
+    // Bersihkan nomor (hapus spasi, strip, tanda kutip)
+    let p = phoneInput.replace(/[^0-9]/g, '');
 
-    // 4. Format 08xx jadi 628xx
-    if (phone.startsWith('0')) {
-        phone = '62' + phone.substring(1);
+    // Format 08.. jadi 628..
+    if (p.startsWith('0')) {
+        p = '62' + p.substring(1);
+    }
+    // Jika user ngetik 62 di awal
+    else if (!p.startsWith('62')) {
+        // Asumsi jika tidak ada 0 atau 62, tambahkan 62 (opsional, tergantung kebiasaan data)
+        p = '62' + p; 
     }
 
-    // 5. Buka WhatsApp di Tab Baru
-    window.open(`https://wa.me/${phone}`, '_blank');
+    // Buka WhatsApp Web/App
+    window.open(`https://wa.me/${p}`, '_blank');
 }

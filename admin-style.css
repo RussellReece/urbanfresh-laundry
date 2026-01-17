@@ -942,28 +942,30 @@ body {
     color: #4361EE;
 }
 
-/* --- WA CHAT BUTTON INSIDE INPUT --- */
-.btn-wa-action {
-    background-color: #25D366; /* Warna Khas WhatsApp */
+/* --- TOMBOL WA DI DALAM INPUT --- */
+.btn-wa-inline {
+    background-color: #25D366; /* Warna WhatsApp */
     color: white;
     border: none;
     border-radius: 6px;
-    width: 32px;
-    height: 32px;
-    margin-left: 8px; /* Jarak dari text input */
+    padding: 6px 12px;
+    margin-left: 8px; /* Jarak dari teks input */
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-size: 14px;
+    gap: 5px;
+    white-space: nowrap; /* Agar teks tidak turun */
+    transition: background 0.2s;
+    flex-shrink: 0; /* Mencegah tombol mengecil/gepeng */
 }
 
-.btn-wa-action:hover {
-    background-color: #128C7E; /* Warna WA lebih gelap saat hover */
-    transform: scale(1.05);
+.btn-wa-inline:hover {
+    background-color: #1ebc57;
 }
 
-.btn-wa-action:active {
-    transform: scale(0.95);
+/* Pastikan input tidak tertutup tombol */
+.input-wrapper input {
+    flex: 1; /* Input mengisi sisa ruang yang ada */
 }

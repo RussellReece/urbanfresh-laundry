@@ -73,6 +73,9 @@
                 <div class="table-tabs">
                     <button class="tab-btn active" onclick="switchTab('B2C')">Order Customer B2C</button>
                     <button class="tab-btn" onclick="switchTab('B2B')">Order Customer B2B</button>
+                    <button class="btn-create-order" onclick="openCreateModal()">
+                        <i class="fa-solid fa-plus"></i> Buat Pesanan
+                    </button>
                 </div>
 
                 <div class="table-wrapper">
@@ -349,6 +352,170 @@
                 </div>
 
                 <button type="submit" class="btn-confirm btn-teal">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalCreateOrder" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Buat Pesanan Baru</h2>
+                <span class="close-btn" onclick="closeModal('modalCreateOrder')">&times;</span>
+            </div>
+
+            <form id="formCreateOrder" onsubmit="handleCreateOrder(event)">
+                
+                <div class="form-group">
+                    <label>Pilih Tipe Pesanan:</label>
+                    <div class="type-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="orderType" value="B2C" checked onclick="toggleCreateType('B2C')">
+                            <span class="radio-custom"><i class="fa-solid fa-user"></i> Customer (B2C)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="orderType" value="B2B" onclick="toggleCreateType('B2B')">
+                            <span class="radio-custom"><i class="fa-solid fa-building"></i> Corporate (B2B)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px dashed #ddd; margin: 20px 0;">
+
+                <div id="createSectionB2C">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nama Pelanggan</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input type="text" id="createB2C_name" placeholder="Nama Lengkap">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor WhatsApp</label>
+                            <div class="input-wrapper">
+                                <i class="fa-brands fa-whatsapp input-icon"></i>
+                                <input type="text" id="createB2C_phone" placeholder="08xxxxx" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Live Location Link</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-map-location-dot input-icon"></i>
+                            <input type="text" id="createB2C_liveloclink" placeholder="https://maps.google.com/...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Alamat Penjemputan</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-map-pin input-icon"></i>
+                            <input type="text" id="createB2C_address" placeholder="Alamat Lengkap">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Layanan</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-shirt input-icon"></i>
+                                <select id="createB2C_service">
+                                    <option value="Wash & Fold">Wash & Fold</option>
+                                    <option value="Dry Cleaning">Dry Cleaning</option>
+                                    <option value="Shoe Care">Shoe Care</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Paket</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-box-open input-icon"></i>
+                                <select id="createB2C_package">
+                                    <option value="Standard">Standard</option>
+                                    <option value="Express">Express</option>
+                                    <option value="Premium">Premium</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="createSectionB2B" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nama Perusahaan</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-building input-icon"></i>
+                                <input type="text" id="createB2B_company" placeholder="PT / CV ...">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nama PIC</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user input-icon"></i>
+                                <input type="text" id="createB2B_pic" placeholder="Penanggung Jawab">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope input-icon"></i>
+                                <input type="email" id="createB2B_email" placeholder="email@company.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Telepon</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-phone input-icon"></i>
+                                <input type="text" id="createB2B_phone" placeholder="08xxxxx" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Kantor</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-map-pin input-icon"></i>
+                            <input type="text" id="createB2B_address" placeholder="Alamat Lengkap">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Industri</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-industry input-icon"></i>
+                                <input type="text" id="createB2B_industry" placeholder="Contoh: Hotel/Resto">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Est. Berat (Kg)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-weight-hanging input-icon"></i>
+                                <input type="text" id="createB2B_weight" placeholder="< 50kg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Paket Kemitraan</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-star input-icon"></i>
+                            <select id="createB2B_package">
+                                <option value="Silver">Silver</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Platinum">Platinum</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Pesan Tambahan</label>
+                        <div class="input-wrapper">
+                            <textarea id="createB2B_message" rows="2" placeholder="Catatan khusus..." style="border:none; outline:none; width:100%; padding:10px; font-family:var(--font-opensans);"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-confirm btn-blue" id="btnSubmitCreate">Buat Pesanan</button>
             </form>
         </div>
     </div>

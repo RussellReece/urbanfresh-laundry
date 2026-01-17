@@ -1,5 +1,5 @@
 // GANTI DENGAN URL APPS SCRIPT ANDA
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb0Qf0e4csapIHMz5CF3gG387ebd_HOuEbxy8cVkQjZPzXdZvUD8I32VgDfY7FbAX3/exec"; 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHh6ygnbEiNtZtHMCXKHH7aIAVUklHjPP-e8UMrFEj0wJuh2VK9JumWqgl-VKL46Q4/exec"; 
 
 // --- GLOBAL VARIABLES ---
 let globalB2CData = [];
@@ -233,6 +233,99 @@ function renderTableB2B(data) {
                 </td>
             </tr>`;
         tbody.innerHTML += row;
+    });
+}
+
+// --- LOGIKA CREATE ORDER ---
+
+function openCreateModal() {
+    // Reset Form
+    document.getElementById('formCreateOrder').reset();
+    
+    // Default ke B2C
+    toggleCreateType('B2C');
+    document.querySelector('input[name="orderType"][value="B2C"]').checked = true;
+    
+    document.getElementById('modalCreateOrder').style.display = 'flex';
+}
+
+function toggleCreateType(type) {
+    const btnSubmit = document.getElementById('btnSubmitCreate');
+    
+    if (type === 'B2C') {
+        document.getElementById('createSectionB2C').style.display = 'block';
+        document.getElementById('createSectionB2B').style.display = 'none';
+        
+        // Ubah warna tombol jadi Biru (Tema B2C)
+        btnSubmit.className = 'btn-confirm btn-blue';
+    } else {
+        document.getElementById('createSectionB2C').style.display = 'none';
+        document.getElementById('createSectionB2B').style.display = 'block';
+        
+        // Ubah warna tombol jadi Teal (Tema B2B)
+        btnSubmit.className = 'btn-confirm btn-teal';
+    }
+}
+
+function handleCreateOrder(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('btnSubmitCreate');
+    const originalText = btn.innerText;
+    btn.innerText = "Memproses...";
+    btn.disabled = true;
+
+    // Cek tipe yang dipilih
+    const type = document.querySelector('input[name="orderType"]:checked').value;
+    let payload = {};
+
+    if (type === 'B2C') {
+        payload = {
+            type: "B2C", 
+            name: document.getElementById('createB2C_name').value,
+            phone: document.getElementById('createB2C_phone').value,
+            address: document.getElementById('createB2C_address').value,
+            // TAMBAHAN: Kirim data Link Lokasi
+            locationLink: document.getElementById('createB2C_liveloclink').value,
+            service: document.getElementById('createB2C_service').value,
+            package: document.getElementById('createB2C_package').value
+        };
+    } else {
+        payload = {
+            type: "B2B",
+            company: document.getElementById('createB2B_company').value,
+            pic: document.getElementById('createB2B_pic').value,
+            email: document.getElementById('createB2B_email').value,
+            phone: document.getElementById('createB2B_phone').value,
+            address: document.getElementById('createB2B_address').value,
+            industry: document.getElementById('createB2B_industry').value,
+            weight: document.getElementById('createB2B_weight').value,
+            corpPackage: document.getElementById('createB2B_package').value,
+            message: document.getElementById('createB2B_message').value
+        };
+    }
+
+    fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result === "success") {
+            alert("Pesanan berhasil dibuat!");
+            closeModal('modalCreateOrder');
+            fetchAllData(); 
+        } else {
+            alert("Gagal membuat pesanan: " + (data.error || "Unknown Error"));
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Terjadi kesalahan koneksi.");
+    })
+    .finally(() => {
+        btn.innerText = originalText;
+        btn.disabled = false;
     });
 }
 

@@ -875,3 +875,69 @@ body {
 @media (max-width: 600px) {
     .form-row { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* --- CREATE ORDER BUTTON (DI TAB) --- */
+.btn-create-order {
+    margin-left: auto; /* Dorong ke paling kanan */
+    background-color: white; /* Hijau Sukses */
+    color: #198754;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: var(--font-poppins);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    height: 35px; /* Sesuaikan tinggi dengan tab */
+    margin-top: 5px;
+}
+
+.btn-create-order:hover {
+    background-color: #157347;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+}
+
+/* --- TYPE SELECTOR (RADIO BUTTONS) --- */
+.type-selector {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.radio-label {
+    cursor: pointer;
+    flex: 1;
+}
+
+/* Sembunyikan radio asli */
+.radio-label input[type="radio"] {
+    display: none;
+}
+
+/* Tampilan Custom Radio Box */
+.radio-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: var(--font-poppins);
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+}
+
+/* Saat Radio Dipilih (Checked) */
+.radio-label input[type="radio"]:checked + .radio-custom {
+    border-color: #4361EE; /* Warna Biru Utama */
+    background-color: #eef2ff;
+    color: #4361EE;
+}

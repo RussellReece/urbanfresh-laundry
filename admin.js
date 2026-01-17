@@ -509,3 +509,27 @@ function switchTab(type) {
         document.querySelector('.table-tabs').classList.add('b2b-mode');
     }
 }
+
+// --- FUNGSI KLIK TOMBOL CHAT WA DI FORM EDIT ---
+function chatWA(inputId) {
+    // 1. Ambil value dari input
+    let phone = document.getElementById(inputId).value;
+    
+    // 2. Validasi jika kosong
+    if (!phone) {
+        alert("Nomor telepon kosong!");
+        return;
+    }
+
+    // 3. Bersihkan karakter aneh (hapus spasi, strip, tanda kutip, huruf)
+    // Hanya sisakan angka
+    phone = phone.replace(/[^0-9]/g, '');
+
+    // 4. Format 08xx jadi 628xx
+    if (phone.startsWith('0')) {
+        phone = '62' + phone.substring(1);
+    }
+
+    // 5. Buka WhatsApp di Tab Baru
+    window.open(`https://wa.me/${phone}`, '_blank');
+}

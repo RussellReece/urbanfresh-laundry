@@ -279,13 +279,13 @@ function handleCreateOrder(e) {
     const type = document.querySelector('input[name="orderType"]:checked').value;
     let payload = {};
 
+    // Kumpulkan Data (Payload)
     if (type === 'B2C') {
         payload = {
             type: "B2C", 
             name: document.getElementById('createB2C_name').value,
             phone: document.getElementById('createB2C_phone').value,
             address: document.getElementById('createB2C_address').value,
-            // TAMBAHAN: Kirim data Link Lokasi
             locationLink: document.getElementById('createB2C_liveloclink').value,
             service: document.getElementById('createB2C_service').value,
             package: document.getElementById('createB2C_package').value
@@ -305,6 +305,7 @@ function handleCreateOrder(e) {
         };
     }
 
+    // Kirim ke Server
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify(payload)
@@ -315,6 +316,62 @@ function handleCreateOrder(e) {
             alert("Pesanan berhasil dibuat!");
             closeModal('modalCreateOrder');
             fetchAllData(); 
+
+            // === FITUR BARU: AUTO KIRIM PESAN SETELAH SUKSES ===
+            
+            // SKENARIO 1: B2C (Kirim WhatsApp)
+            if (type === 'B2C') {
+                // 1. Bersihkan Nomor HP
+                let p = payload.phone.replace(/[^0-9]/g, '');
+                if (p.startsWith('0')) p = '62' + p.substring(1);
+                
+                // 2. Siapkan Pesan WA
+                // Gunakan \n untuk enter baris baru
+                const waMessage = 
+`Halo Bpk/Ibu *${payload.name}*, 👋
+
+Pesanan laundry Anda di *UrbanFresh* berhasil dibuat!
+
+🆔 *Order ID:* ${data.orderID}
+🧺 *Layanan:* ${payload.service}
+📦 *Paket:* ${payload.package}
+📍 *Alamat:* ${payload.address}
+
+Mohon tunggu sebentar, tim kami akan segera menjemput cucian Anda. Terima kasih! ✨`;
+
+                // 3. Buka WhatsApp
+                window.open(`https://wa.me/${p}?text=${encodeURIComponent(waMessage)}`, '_blank');
+            }
+
+            // SKENARIO 2: B2B (Kirim Email)
+            else if (type === 'B2B') {
+                if (payload.email) {
+                    // 1. Siapkan Subject & Body Email
+                    const subject = `Konfirmasi Pesanan - ${payload.company} (ID: ${data.orderID})`;
+                    const body = 
+`Yth. ${payload.pic},
+
+Terima kasih telah mempercayakan kebutuhan laundry perusahaan Anda kepada UrbanFresh Corporate.
+
+Kami mengonfirmasi bahwa pesanan/proposal Anda telah tercatat di sistem kami dengan detail:
+
+ID Pesanan: ${data.orderID}
+Perusahaan: ${payload.company}
+Paket Kemitraan: ${payload.corpPackage}
+Estimasi Berat: ${payload.weight}
+
+Tim Corporate kami akan segera menghubungi Anda untuk proses selanjutnya.
+
+Salam Hangat,
+UrbanFresh Management`;
+
+                    // 2. Buka Aplikasi Email Bawaan
+                    window.location.href = `mailto:${payload.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                } else {
+                    alert("Email kosong, tidak dapat membuka aplikasi email otomatis.");
+                }
+            }
+
         } else {
             alert("Gagal membuat pesanan: " + (data.error || "Unknown Error"));
         }

@@ -73,13 +73,45 @@ function getPackageClass(pkgName) {
     return "pkg-standard"; // Default (Standard)
 }
 
-// --- RENDER CARD B2C (UPDATED) ---
+// ==========================================
+// HELPER: WARNA STATUS DINAMIS (BARU)
+// ==========================================
+function getStatusClass(status) {
+    if (!status) return "st-grey";
+    const s = status.toLowerCase().trim();
+
+    // 1. Kuning
+    if (s === 'menunggu konfirmasi') return 'st-yellow';
+    
+    // 2. Orange/Peach
+    if (s === 'menunggu penjemputan' || s === 'sedang ditinjau') return 'st-orange';
+
+    // 3. Biru Tua
+    if (s === 'sedang dicuci' || s === 'proses negosiasi') return 'st-blue-dark';
+
+    // 4. Biru Muda
+    if (s.includes('pengeringan') || s.includes('survey')) return 'st-blue-light';
+
+    // 5. Abu-abu
+    if (s === 'siap diantar') return 'st-grey';
+
+    // 6. Hijau Muda
+    if (s === 'sedang dikirim') return 'st-green-light';
+
+    // 7. Hijau Tua
+    if (s === 'selesai' || s.includes('kontrak disetujui')) return 'st-green-dark';
+
+    // 8. Merah
+    if (s === 'dibatalkan' || s.includes('ditolak')) return 'st-red';
+
+    return 'st-grey'; // Default fallback
+}
+
+// --- RENDER CARD B2C ---
 function renderCardB2C(order) {
     const container = document.getElementById('newOrderCardContainer');
-    // Ambil kelas warna berdasarkan nama paket
     const packageClass = getPackageClass(order.package);
 
-    // Fitur List
     const packageDetails = {
         "Standard": ["Layanan Dasar", "Deterjen Standar", "Estimasi 3 Hari"],
         "Express": ["Layanan Prioritas", "Deterjen Premium", "Estimasi 1 Hari"],
@@ -111,10 +143,9 @@ function renderCardB2C(order) {
     `;
 }
 
-// --- RENDER CARD B2B (UPDATED) ---
+// --- RENDER CARD B2B ---
 function renderCardB2B(order) {
     const container = document.getElementById('newOrderCardContainer');
-    // Ambil kelas warna berdasarkan nama paket
     const packageClass = getPackageClass(order.package);
 
     container.innerHTML = `
@@ -140,7 +171,73 @@ function renderCardB2B(order) {
     `;
 }
 
-// --- FUNGSI CONFIRM & LAINNYA (TETAP) ---
+// --- RENDER TABLE B2C (UPDATED COLOR LOGIC) ---
+function renderTableB2C(data) {
+    const tbody = document.getElementById('tbodyB2C');
+    tbody.innerHTML = "";
+    data.forEach(item => {
+        // Gunakan getStatusClass untuk mendapatkan warna yang benar
+        const statusClass = getStatusClass(item.status);
+        
+        const linkUrl = (item.locationLink && item.locationLink !== "-") ? item.locationLink : "#";
+        const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
+        const addressText = item.address || "No Address";
+        
+        // Render Baris
+        const row = `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.phone}</td>
+                <td><span style="background:#F1F3F5; color:#495057; border:1px solid #DEE2E6;">${item.service}</span></td>
+                <td><span class="${getPackageClass(item.package)}">${item.package}</span></td>
+                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                <td>${item.timestamp}</td>
+                <td><a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a></td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+// --- RENDER TABLE B2B (UPDATED COLOR LOGIC) ---
+function renderTableB2B(data) {
+    const tbody = document.getElementById('tbodyB2B');
+    tbody.innerHTML = "";
+    data.forEach(item => {
+        // Gunakan getStatusClass untuk mendapatkan warna yang benar
+        const statusClass = getStatusClass(item.status);
+
+        const addressText = item.address || "No Address";
+        const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
+        const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
+        
+        // Render Baris
+        const row = `
+            <tr>
+                <td>${item.company}</td>
+                <td>${item.pic}</td>
+                <td title="${item.email}">${item.email}</td>
+                <td>${item.phone}</td>
+                <td>${item.industry}</td>
+                <td>${item.weight}</td>
+                <td><span class="${getPackageClass(item.package)}">${item.package}</span></td>
+                <td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td>
+                <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                <td>${item.timestamp}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+// --- FUNGSI UPDATE STATUS, MODAL, DELETE, DLL (TETAP SAMA) ---
+
 function confirmOrder(id, type) {
     let newStatus = "Menunggu Penjemputan"; 
     let confirmMsg = "Konfirmasi pesanan ini? Status akan diubah menjadi 'Menunggu Penjemputan'.";
@@ -151,7 +248,6 @@ function confirmOrder(id, type) {
     }
 
     if(!confirm(confirmMsg)) return;
-    
     const btn = document.querySelector('.btn-confirm');
     if(btn) { btn.innerText = "Memproses..."; btn.disabled = true; }
     
@@ -162,95 +258,6 @@ function confirmOrder(id, type) {
         else { alert("Gagal update status."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } }
     })
     .catch(err => { alert("Gagal koneksi server."); if(btn) { btn.innerText = "Konfirmasi"; btn.disabled = false; } });
-}
-
-// --- SISA FUNGSI (Render Table, Modal, Delete, Summary) ---
-// (Dicopy sama persis agar file tidak terpotong)
-
-function renderTableB2C(data) {
-    const tbody = document.getElementById('tbodyB2C');
-    tbody.innerHTML = "";
-    data.forEach(item => {
-        let statusClass = "status-selesai"; 
-        const s = item.status.toLowerCase();
-        if(s.includes("menunggu") || s.includes("proses") || s.includes("sedang") || s.includes("siap") || s.includes("kurir")) statusClass = "status-pending";
-        if(s.includes("batal")) statusClass = "status-batal";
-        const linkUrl = (item.locationLink && item.locationLink !== "-") ? item.locationLink : "#";
-        const linkTarget = (linkUrl !== "#") ? "_blank" : "_self";
-        const addressText = item.address || "No Address";
-        const row = 
-        `<tr>
-            <td>${item.name}</td>
-            <td>${item.phone}</td>
-            <td>
-                <span 
-                style="background:#eee; 
-                padding:2px 8px; 
-                border-radius:4px;">${item.service}
-                </span>
-            </td>
-            <td>
-                <span 
-                style="background:#e0f7fa; 
-                color:#006064; 
-                padding:2px 8px; 
-                border-radius:4px;">${item.package}
-                </span>
-            </td>
-            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-            <td>${item.timestamp}</td>
-            <td>
-                <a href="${linkUrl}" target="${linkTarget}" class="location-link" title="${linkUrl}">${addressText}</a>
-            </td>
-            <td>
-                <button class="btn-action btn-edit" onclick="openEditModalB2C('${item.id}')">Edit</button>
-                <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2C')">
-                    <i class="fa-solid fa-trash"></i> 
-                </button>
-            </td>
-        </tr>`;
-        tbody.innerHTML += row;
-    });
-}
-
-function renderTableB2B(data) {
-    const tbody = document.getElementById('tbodyB2B');
-    tbody.innerHTML = "";
-    data.forEach(item => {
-        let statusClass = "status-selesai";
-        const s = item.status.toLowerCase();
-        if(s.includes("menunggu") || s.includes("negosiasi") || s.includes("tinjau") || s.includes("survey")) statusClass = "status-pending";
-        if(s.includes("batal") || s.includes("tolak")) statusClass = "status-batal";
-        const addressText = item.address || "No Address";
-        const mapSearchLink = item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : "#";
-        const linkTarget = (mapSearchLink !== "#") ? "_blank" : "_self";
-        const row = 
-        `<tr>
-            <td title="${item.company}">${item.company}</td>
-            <td title="${item.pic}">${item.pic}</td>
-            <td title="${item.email}">${item.email}</td>
-            <td title="${item.phone}">${item.phone}</td>
-            <td title="${item.industry}">${item.industry}</td>
-            <td title="${item.weight}">${item.weight}</td>
-            <td>
-                <span 
-                style="background:#495057; 
-                color:white; 
-                padding:2px 8px; 
-                border-radius:4px;">${item.package}</span>
-            </td>
-            <td><a href="${mapSearchLink}" target="${linkTarget}" class="location-link" title="Cari di Maps">${addressText}</a></td>
-            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-            <td>${item.timestamp}</td>
-            <td>
-                <button class="btn-action btn-edit" onclick="openEditModalB2B('${item.id}')">Edit</button>
-                <button class="btn-action btn-delete" onclick="deleteOrder('${item.id}', 'B2B')">
-                    <i class="fa-solid fa-trash"></i> 
-                </button>
-            </td>
-        </tr>`;
-        tbody.innerHTML += row;
-    });
 }
 
 function calculateSummary(b2cData, b2bData) {
@@ -389,12 +396,9 @@ function deleteOrder(id, type) {
     .catch(err => alert("Error koneksi."));
 }
 
-// --- FUNGSI GANTI TAB (DENGAN TRANSISI WARNA) ---
 function switchTab(type) {
-    // 1. Atur Tombol Aktif
     const buttons = document.querySelectorAll('.tab-btn');
     buttons.forEach(btn => {
-        // Hapus active dari semua, lalu tambahkan ke yang diklik
         if (btn.textContent.includes(type)) {
             btn.classList.add('active');
         } else {
@@ -402,19 +406,13 @@ function switchTab(type) {
         }
     });
 
-    // 2. Ganti Tampilan Tabel
     if (type === 'B2C') {
         document.getElementById('tableB2C').style.display = 'table';
         document.getElementById('tableB2B').style.display = 'none';
-        
-        // Hapus mode B2B (Kembali ke Biru B2C)
         document.querySelector('.table-tabs').classList.remove('b2b-mode');
-        
     } else {
         document.getElementById('tableB2C').style.display = 'none';
         document.getElementById('tableB2B').style.display = 'table';
-        
-        // Tambah mode B2B (Berubah jadi Gelap/Teal)
         document.querySelector('.table-tabs').classList.add('b2b-mode');
     }
 }

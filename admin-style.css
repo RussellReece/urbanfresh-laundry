@@ -187,13 +187,69 @@ body {
     border-bottom: 1px solid #f5f5f5;
 }
 
-/* Status Badges in Table */
+/* ========================================= */
+/* --- SPECIFIC STATUS COLORS (NEW) --- */
+/* ========================================= */
+
+/* Pastikan bentuk tetap rounded (pill) */
 .status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
+    padding: 6px 15px;
+    border-radius: 50px; /* Bentuk Pill */
     font-size: 12px;
-    color: white;
     font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    border: none; /* Hapus border default jika ada */
+    display: inline-block;
+    min-width: 120px; /* Lebar minimum agar seragam */
+}
+
+/* 1. KUNING (Menunggu Konfirmasi) */
+.st-yellow {
+    background-color: #FDE047; /* Kuning terang */
+    color: #422006; /* Coklat tua */
+}
+
+/* 2. ORANGE/PEACH (Menunggu Penjemputan / Sedang Ditinjau) */
+.st-orange {
+    background-color: #FDBA74; /* Orange pastel */
+    color: #431407; /* Merah bata tua */
+}
+
+/* 3. BIRU TUA (Sedang Dicuci / Proses Negosiasi) */
+.st-blue-dark {
+    background-color: #1565C0; /* Biru Royal */
+    color: white;
+}
+
+/* 4. BIRU MUDA (Pengeringan / Jadwal Survey) */
+.st-blue-light {
+    background-color: #BFDBFE; /* Biru Langit */
+    color: #1E3A8A; /* Biru Malam Text */
+}
+
+/* 5. ABU-ABU (Siap Diantar) */
+.st-grey {
+    background-color: #CFD8DC; /* Silver Blue */
+    color: #37474F; /* Slate Text */
+}
+
+/* 6. HIJAU MUDA (Sedang Dikirim) */
+.st-green-light {
+    background-color: #DCFCE7; /* Hijau Mint */
+    color: #14532D; /* Hijau Hutan Text */
+}
+
+/* 7. HIJAU TUA (Selesai / Kontrak Disetujui) */
+.st-green-dark {
+    background-color: #15803D; /* Hijau Mantap */
+    color: white;
+}
+
+/* 8. MERAH (Dibatalkan / Ditolak) */
+.st-red {
+    background-color: #B91C1C; /* Merah Darah */
+    color: white;
 }
 .status-selesai { background-color: #198754; } /* Hijau */
 .status-pending { background-color: #ffc107; color: #333; }
@@ -297,7 +353,7 @@ body {
 
 /* --- TABLE WRAPPER & SCROLLING --- */
 .table-wrapper {
-    padding-left: 15px;
+    padding-left: 0px;
     padding-right: 0;
     padding-top: 0;
     padding-bottom: 0;
@@ -345,6 +401,20 @@ body {
     z-index: 10; /* Pastikan di atas isi tabel */
     background-color: #f9fafb; /* Warna background header */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* Bayangan kecil di bawah header */
+}
+
+/* ================================================= */
+/* FIX: GAP/JARAK TEPI KIRI PADA TABEL (Area Garis Merah) */
+/* ================================================= */
+
+/* Memberikan jarak besar di kiri Judul Kolom (NAME/COMPANY) */
+.custom-table thead th:first-child {
+    padding-left: 40px !important; /* Jarak Header */
+}
+
+/* Memberikan jarak besar di kiri Isi Kolom (Nama Orang/PT) */
+.custom-table tbody td:first-child {
+    padding-left: 40px !important; /* Jarak Isi Data */
 }
 
 /* Fix untuk Sticky Action Column saat Header Sticky juga aktif */
@@ -695,23 +765,22 @@ body {
 
 /* --- COLORS FOR PACKAGE BADGES (NEW) --- */
 
-/* 1. Standard (Default) - Putih Kebiruan */
+/* 1. Standard (Biru Langit Pucat - Teks Biru) */
 .pkg-standard {
-    background-color: #CFE8F3;
-    color: #023E8A;
+    background-color: #D6EAF8 !important; 
+    color: #185596 !important;           
 }
 
-/* 2. Express - Kuning/Oranye Cerah */
+/* 2. Express (Cyan Keabuan - Teks Cyan Gelap) */
 .pkg-express {
-    background-color: #FFD166; /* Pastel Yellow/Orange */
-    color: #5D4037; /* Coklat tua agar terbaca */
+    background-color: #D3E2E3 !important; 
+    color: #1F5B61 !important;           
 }
 
-/* 3. Premium - Merah Muda / Ungu */
+/* 3. Premium (Biru Royal Gelap - Teks Putih) */
 .pkg-premium {
-    background-color: #5D00FF; /* Vibrant Purple */
-    color: white;
-    box-shadow: 0 4px 10px rgba(116, 71, 239, 0.3);
+    background-color: #5D00FF !important; 
+    color: white !important;              
 }
 
 /* 4. Silver - Abu-abu Metalik */

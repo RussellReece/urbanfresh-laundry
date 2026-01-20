@@ -1,9 +1,85 @@
 // GANTI DENGAN URL APPS SCRIPT ANDA
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHh6ygnbEiNtZtHMCXKHH7aIAVUklHjPP-e8UMrFEj0wJuh2VK9JumWqgl-VKL46Q4/exec"; 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyw32LJ1xmZqoveUQVdKQNyUhhXgsTJ3wo2P0b2XXhH6DdqY0bOu7SwhAYoCc6Nc-FL/exec"; 
 
 // --- GLOBAL VARIABLES ---
 let globalB2CData = [];
 let globalB2BData = [];
+let dashboardInterval; // Simpan interval ID agar bisa di-stop/start
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Cek apakah sudah login sebelumnya (Simpan di localStorage)
+    const isLogged = localStorage.getItem("urbanFreshAdminLogged");
+    
+    if (isLogged === "true") {
+        showDashboard();
+    } else {
+        // Biarkan di halaman login
+    }
+});
+
+// --- FUNGSI LOGIN ---
+function handleLogin(e) {
+    e.preventDefault();
+    
+    const user = document.getElementById('usernameInput').value;
+    const pass = document.getElementById('passwordInput').value;
+    const btn = document.getElementById('btnLogin');
+    const msg = document.getElementById('loginMessage');
+
+    // UI Loading
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+    btn.disabled = true;
+    msg.innerText = "";
+
+    const payload = {
+        action: "login",
+        username: user,
+        password: pass
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result === "success") {
+            // Login Berhasil
+            localStorage.setItem("urbanFreshAdminLogged", "true");
+            showDashboard();
+        } else {
+            // Login Gagal
+            msg.innerText = "Username atau Password salah!";
+            btn.innerHTML = 'MASUK <i class="fa-solid fa-arrow-right"></i>';
+            btn.disabled = false;
+        }
+    })
+    .catch(err => {
+        msg.innerText = "Terjadi kesalahan koneksi.";
+        console.error(err);
+        btn.innerHTML = 'MASUK <i class="fa-solid fa-arrow-right"></i>';
+        btn.disabled = false;
+    });
+}
+
+// --- FUNGSI LOGOUT ---
+function handleLogout() {
+    if(confirm("Yakin ingin keluar?")) {
+        localStorage.removeItem("urbanFreshAdminLogged");
+        location.reload(); // Refresh halaman agar kembali ke login
+    }
+}
+
+// --- TAMPILKAN DASHBOARD ---
+function showDashboard() {
+    // Sembunyikan Login, Tampilkan Main
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('mainDashboard').style.display = 'block'; // Atau 'flex' tergantung layout
+
+    // Baru mulai ambil data setelah login
+    fetchAllData();
+    dashboardInterval = setInterval(fetchAllData, 5000); 
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchAllData();

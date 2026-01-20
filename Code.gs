@@ -12,6 +12,44 @@ function handleResponse(e) {
     const doc = SpreadsheetApp.getActiveSpreadsheet();
     const action = e.parameter.action;
 
+// Handle POST data parsing
+    let postData = null;
+    if (e.postData && e.postData.contents) {
+       postData = JSON.parse(e.postData.contents);
+    }
+    
+    // Jika POST, cek action dari body JSON juga
+    const requestAction = action || (postData ? postData.action : null);
+
+    // ===========================
+    // FITUR BARU: LOGIN ADMIN
+    // ===========================
+    if (requestAction === "login") {
+        const sheetUsers = doc.getSheetByName("Admin_Users");
+        if (!sheetUsers) return ContentService.createTextOutput(JSON.stringify({ result: "error", message: "Sheet User tidak ditemukan" }));
+        
+        const users = sheetUsers.getDataRange().getValues(); // Ambil semua user
+        const inputUser = postData.username;
+        const inputPass = postData.password;
+        
+        let isValid = false;
+        
+        // Loop cek username & password (Mulai dari baris 1 utk skip header)
+        for (let i = 1; i < users.length; i++) {
+            // Kolom 0 = Username, Kolom 1 = Password
+            if (String(users[i][0]) === String(inputUser) && String(users[i][1]) === String(inputPass)) {
+                isValid = true;
+                break;
+            }
+        }
+        
+        if (isValid) {
+            return ContentService.createTextOutput(JSON.stringify({ result: "success" })).setMimeType(ContentService.MimeType.JSON);
+        } else {
+            return ContentService.createTextOutput(JSON.stringify({ result: "fail" })).setMimeType(ContentService.MimeType.JSON);
+        }
+    }
+
     // ===========================
     // 1. GET ALL DATA (READ)
     // ===========================

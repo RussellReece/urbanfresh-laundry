@@ -294,3 +294,9 @@ window.addEventListener("scroll", function() {
         navbar.style.boxShadow = "none";
     }
 });
+
+// --- MOBILE MENU TOGGLE ---
+function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}

@@ -1382,3 +1382,106 @@ body {
     color: #666;
     margin-bottom: 20px;
 }
+
+/* Hamburger Menu Icon (Default Hidden) */
+.hamburger {
+    display: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--secondary-blue);
+}
+
+/* RESPONSIVE NAVBAR */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Sembunyi default */
+        flex-direction: column;
+        position: absolute;
+        top: 70px; /* Tinggi navbar */
+        left: 0;
+        width: 100%;
+        background-color: white;
+        padding: 20px 0;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        text-align: left;
+        padding-left: 20px;
+        gap: 20px;
+        z-index: 1000;
+    }
+
+    /* Kelas .active ditambahkan lewat JS nanti */
+    .nav-links.active {
+        display: flex; 
+    }
+
+    .hamburger {
+        display: block; /* Munculkan icon baris tiga */
+    }
+
+    .btn-primary {
+        margin: 0 20px; /* Rapikan tombol di menu mobile */
+    }
+}
+
+/* ========================================= */
+/* --- PERBAIKAN KHUSUS MOBILE (HP) --- */
+/* ========================================= */
+
+@media (max-width: 768px) {
+    
+    /* 1. FIX JUDUL TERTUTUP HAMBURGER */
+    .hero {
+        /* Tambah jarak atas agar turun ke bawah navbar */
+        padding-top: 70px !important; 
+        
+        /* Opsional: Rapikan text agar tengah */
+        text-align: center;
+        padding-bottom: 60px; /* Beri nafas bawah */
+    }
+
+    .badge-container { margin-bottom: 7px; }
+    .hero-badge {
+        font-family: var(--font-opensans); font-size: 11px; font-weight: 600;
+        background-color: var(--primary-blue); color: white;
+        padding: 6px 15px; border-radius: 30px 30px 30px 30px;
+        display: inline-block;
+    }
+
+    .hero-content h1 {
+        margin-top: 20px; /* Tambahan jarak aman */
+        font-size: 2.5rem; /* Kecilkan font sedikit agar tidak terlalu raksasa */
+    }
+
+    .hero-content p {
+        margin: 0 auto 30px auto; /* Tengah-kan paragraf deskripsi */
+        font-size: 12px;
+    }
+    .cta-button {
+        font-family: var(--font-opensans); font-size: 14px; font-weight: 600;
+        text-decoration: none; color: white; background-color: var(--accent-teal);
+        padding: 9px 21px; border-radius: 30px; display: inline-flex;
+        align-items: center; gap: 7px;
+        box-shadow: 0 5px 15px rgba(32, 180, 156, 0.3); transition: transform 0.2s;
+    }
+
+    /* 2. FIX GAMBAR "HOW IT WORKS" TERLALU BESAR */
+    /* Target gambar di dalam kartu langkah-langkah */
+    .work-step img, 
+    .step-card img { 
+        width: 200px !important; /* Paksa ukuran jadi kecil (ikonis) */
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    .work-step, 
+    .step-card {
+        padding: 20px; /* Kurangi padding kartu agar tidak memakan tempat */
+    }
+
+    /* Pastikan grid langkah-langkah menjadi 1 kolom (atas-bawah) */
+    .steps-grid, 
+    .works-container {
+        grid-template-columns: 1fr !important;
+        gap: 30px;
+    }
+}

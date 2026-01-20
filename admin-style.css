@@ -1000,6 +1000,8 @@ body {
     position: relative;
     z-index: 2;
     animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* Tambahan untuk Safari/iOS */
 }
 
 .login-header {
@@ -1145,4 +1147,24 @@ body {
 }
 .logout-btn:hover {
     background: #FFCDD2;
+}
+
+/* RESPONSIVE MODAL & TABLE */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%; /* Melebar jadi 90% layar di HP */
+        margin: 20px auto;
+        max-height: 90vh; /* Agar bisa discroll jika form panjang */
+        overflow-y: auto;
+    }
+
+    .admin-container {
+        padding: 10px; /* Kurangi padding container utama */
+    }
+    
+    /* Login Card agar pas di HP */
+    .login-card {
+        width: 90%;
+        padding: 20px;
+    }
 }
